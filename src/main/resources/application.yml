@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres
+    username : postgres.uxatsjztfknsrmpcwiqt
+    password : VSFD2rknE4zCrsSG
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      format_sql: true
+      highlight_sql : true
+      use_sql_comments : true
+      default_batch_fetch_size : 500
+      hibernate:
+        show_sql: true
+    open-in-view: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm :
+          jdbc :
+            bind : trace
+      springframework:
+        security : debug
+
+auth:
+  jwt:
+    issuer: team.sparta.com
+    secret: gH7kRw9FpD3yN2mQxL5aJcUvZ1oP4bS6
+    accessTokenExpirationHour: 168
