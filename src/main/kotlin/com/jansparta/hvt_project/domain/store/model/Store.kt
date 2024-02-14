@@ -1,4 +1,4 @@
-package com.jansparta.hvt_project.domain.model
+package com.jansparta.hvt_project.domain.store.model
 
 import jakarta.persistence.*
 
