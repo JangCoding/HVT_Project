@@ -8,13 +8,13 @@ class Store(
     @Column(name = "COMPANY") // 상호
     var company: String,
     @Column(name = "SHOP_NAME") // 쇼핑몰명
-    var shopName: String,
+    var shopName: String?,
     @Column(name = "DOMAIN_NAME") // 도메인명
-    var domainName: String,
+    var domainName: String?,
     @Column(name = "TEL") // 전화번호
-    var tel: String,
+    var tel: String?,
     @Column(name = "EMAIL") // 운영자이메일
-    var email: String,
+    var email: String?,
     @Column(name = "UPJONG_NBR") // 통신판매번호
     var upjongNbr: String?,
     @Column(name = "YPFORM") // 영업형태
@@ -40,7 +40,7 @@ class Store(
     @Column(name = "SERVICE") // 주요취급품목
     var service: String?,
     @Column(name = "CHUNG") // 청약철회가능여부
-    var chung: String,
+    var chung: String?,
     @Column(name = "CHOGI") // 초기화면필수항목중표시사항
     var chogi: String?,
     @Column(name = "GYULJE") // 결제방법
@@ -48,25 +48,25 @@ class Store(
     @Column(name = "PYOJUN") // 이용약관준수정도
     var pyojun: String,
     @Column(name = "P_INFO_CARE") // 개인정보취급방침
-    var pInfoCare: String,
+    var pInfoCare: String?,
     @Column(name = "PER_INFO") // 표준약관이상개인정보항목요구
     var perInfo: String?,
     @Column(name = "DEAL_CARE") // 구매안전서비스
-    var dealCare: String,
+    var dealCare: String?,
     @Column(name = "SSL_YN") // 보안서버설치
     var sslYn: String?,
     @Column(name = "INJEUNG") // 인증마크
     var injeung: String?,
     @Column(name = "BAESONG_YEJEONG") // 배송예정일표시
-    var baesongYejeong: String,
+    var baesongYejeong: String?,
     @Column(name = "BAESONG") // 철회시배송비부담여부
-    var baesong: String,
+    var baesong: String?,
     @Column(name = "CLIENT_BBS") // 고객불만게시판운영
-    var clientBbs: String,
+    var clientBbs: String?,
     @Column(name = "LEAVE") // 회원탈퇴방법
-    var leave: String,
+    var leave: String?,
     @Column(name = "KAESOL_YEAR") // 사이트개설년도
-    var kaesolYear: Int,
+    var kaesolYear: String?,
     @Column(name = "REG_DATE") // 모니터링날짜
     var regDate: String
 ){
