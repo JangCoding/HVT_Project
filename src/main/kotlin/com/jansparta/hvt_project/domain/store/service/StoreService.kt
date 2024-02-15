@@ -1,4 +1,25 @@
 package com.jansparta.hvt_project.domain.store.service
 
+import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
+import com.jansparta.hvt_project.domain.store.dto.StoreResponse
+import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
+import org.springframework.http.ResponseEntity
+
 interface StoreService {
+
+    fun getStoresFromCSV()
+
+    fun createStore( request : CreateStoreRequest ) : StoreResponse
+
+    fun updateStore( request : UpdateStoreRequest ) : ResponseEntity<StoreResponse>
+
+    fun getAllDetailedStores()
+
+    fun getAllSimpleStores()
+
+    fun getFilteredDetailedStores()
+
+    fun getFilteredSimpleStore()
+
+    fun getStoreById( id : Long ) : StoreResponse
 }
