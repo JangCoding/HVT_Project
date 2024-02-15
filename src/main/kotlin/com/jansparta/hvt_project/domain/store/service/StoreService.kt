@@ -13,11 +13,11 @@ interface StoreService {
 
     fun updateStore( request : UpdateStoreRequest ) : ResponseEntity<StoreResponse>
 
-    fun getAllDetailedStores()
+    fun getAllStores()
 
     fun getAllSimpleStores()
 
-    fun getFilteredDetailedStores()
+    fun getFilteredStores()
 
     fun getFilteredSimpleStore()
 

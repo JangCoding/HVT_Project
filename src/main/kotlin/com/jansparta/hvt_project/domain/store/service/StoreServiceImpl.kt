@@ -25,7 +25,7 @@ class StoreServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getAllDetailedStores() {
+    override fun getAllStores() {
         TODO("Not yet implemented")
     }
 
@@ -33,7 +33,7 @@ class StoreServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getFilteredDetailedStores() {
+    override fun getFilteredStores() {
         TODO("Not yet implemented")
     }
 
