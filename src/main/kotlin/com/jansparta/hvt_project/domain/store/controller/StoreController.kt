@@ -41,8 +41,8 @@ class StoreController (
         TODO()
     }
 
-    @GetMapping("/all/detailed")
-    fun getAllDetailedStores()
+    @GetMapping("/all")
+    fun getAllStores()
     {
         TODO()
     }
@@ -53,8 +53,8 @@ class StoreController (
         TODO()
     }
 
-    @GetMapping("/filtered/detailed")
-    fun getFilteredDetailedStores()
+    @GetMapping("/filtered")
+    fun getFilteredStores()
     {
         TODO()
     }
