@@ -21,6 +21,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         return queryFactory.selectFrom(store)
             .where(whereClause)
             .orderBy(store.regDate.desc())
+            .limit(10)
             .fetch()
     }
 }
