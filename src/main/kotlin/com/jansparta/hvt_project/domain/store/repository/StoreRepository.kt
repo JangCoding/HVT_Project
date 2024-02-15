@@ -4,5 +4,5 @@ import com.jansparta.hvt_project.domain.store.model.Store
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface StoreRepository : JpaRepository<Store, Long> {
-
+    fun existsByCompany(company : String) : Boolean
 }

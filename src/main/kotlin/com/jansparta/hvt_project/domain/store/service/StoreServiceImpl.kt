@@ -3,7 +3,12 @@ package com.jansparta.hvt_project.domain.store.service
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
+import com.jansparta.hvt_project.domain.store.dto.toResponse
+import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
@@ -18,14 +23,58 @@ class StoreServiceImpl(
     }
 
     override fun createStore(request: CreateStoreRequest): StoreResponse {
+
+        if(storeRepository.existsByCompany(request.company)){
+            throw DataIntegrityViolationException("Company name is already in use")
+        }
+
+        return storeRepository.save(
+            Store(
+                company = request.company,
+                shopName = request.shopName,
+                domainName = request.domainName,
+                tel = request.tel,
+                email = request.email,
+                upjongNbr = request.upjongNbr,
+                ypForm = request.ypForm,
+                firstHeoDate = request.firstHeoDate,
+                comAddr = request.comAddr,
+                statNm = request.statNm,
+                totRatingPoint = request.totRatingPoint,
+                chogiRatingPoint = request.chogiRatingPoint,
+                chungRatingPoint = request.chungRatingPoint,
+                dealRatingPoint = request.dealRatingPoint,
+                pyojunRatingPoint = request.pyojunRatingPoint,
+                securityRatingPoint = request.securityRatingPoint,
+                service = request.service,
+                chung = request.chung,
+                chogi = request.chogi,
+                gyulje = request.gyulje,
+                pyojun = request.pyojun,
+                pInfoCare = request.pInfoCare,
+                perInfo = request.perInfo,
+                dealCare = request.dealCare,
+                sslYn = request.sslYn,
+                injeung = request.injeung,
+                baesongYejeong = request.baesongYejeong,
+                baesong = request.baesong,
+                clientBbs = request.clientBbs,
+                leave = request.leave,
+                kaesolYear = request.kaesolYear,
+                regDate = request.regDate
+            )).toResponse()
+    }
+
+    override fun updateStore(request: UpdateStoreRequest): StoreResponse {
         TODO("Not yet implemented")
     }
 
-    override fun updateStore(request: UpdateStoreRequest): ResponseEntity<StoreResponse> {
-        TODO("Not yet implemented")
-    }
+    override fun getAllStores(
+        pageable: Pageable
+    ) : Page<StoreResponse> {
 
-    override fun getAllStores() {
+
+
         TODO("Not yet implemented")
     }
 
