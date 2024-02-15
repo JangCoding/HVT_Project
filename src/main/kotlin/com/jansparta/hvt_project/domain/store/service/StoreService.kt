@@ -13,7 +13,7 @@ interface StoreService {
 
     fun createStore( request : CreateStoreRequest ) : StoreResponse
 
-    fun updateStore( request : UpdateStoreRequest ) : StoreResponse
+    fun updateStore( request : UpdateStoreRequest , id : Long) : StoreResponse
 
     fun getAllStores( pageable : Pageable) : Page<StoreResponse>
 

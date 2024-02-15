@@ -74,12 +74,13 @@ class StoreController (
     }
 
 
-    @PutMapping("/update") // 업체 수정
+    @PutMapping("/update/{id}") // 업체 수정
     fun updateStore(
-        @RequestBody request : UpdateStoreRequest
+        @RequestBody request : UpdateStoreRequest,
+        @PathVariable id : Long,
     ) : ResponseEntity<StoreResponse>
     {
-        TODO()
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.updateStore(request, id))
     }
 
     @DeleteMapping("/delete/{id}") // 업체 삭제
