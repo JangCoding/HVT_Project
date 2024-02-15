@@ -124,6 +124,16 @@ class StoreServiceImpl(
             ?:throw NotFoundException()
     }
 
+    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
+
+         return if(toSimple){
+             storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as Page<T>
+         }
+        else {
+             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
+         }
+    }
+
     override fun getFilteredStores() {
         TODO("Not yet implemented")
     }

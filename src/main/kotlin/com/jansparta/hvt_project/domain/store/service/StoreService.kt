@@ -20,8 +20,8 @@ interface StoreService {
 
     fun getAllSimpleStores( pageable : Pageable ): Page<SimpleStoreResponse>
 
+    fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
     fun getFilteredStores()
-
     fun getFilteredSimpleStore()
 
     fun getStoreById( id : Long ) : StoreResponse
