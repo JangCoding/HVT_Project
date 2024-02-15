@@ -71,40 +71,40 @@ class StoreServiceImpl(
         var store = storeRepository.findByIdOrNull(id)
             ?: throw NotFoundException()
 
-        store = Store(
-            company = request.company,
-            shopName = request.shopName,
-            domainName = request.domainName,
-            tel = request.tel,
-            email = request.email,
-            upjongNbr = request.upjongNbr,
-            ypForm = request.ypForm,
-            firstHeoDate = request.firstHeoDate,
-            comAddr = request.comAddr,
-            statNm = request.statNm,
-            totRatingPoint = request.totRatingPoint,
-            chogiRatingPoint = request.chogiRatingPoint,
-            chungRatingPoint = request.chungRatingPoint,
-            dealRatingPoint = request.dealRatingPoint,
-            pyojunRatingPoint = request.pyojunRatingPoint,
-            securityRatingPoint = request.securityRatingPoint,
-            service = request.service,
-            chung = request.chung,
-            chogi = request.chogi,
-            gyulje = request.gyulje,
-            pyojun = request.pyojun,
-            pInfoCare = request.pInfoCare,
-            perInfo = request.perInfo,
-            dealCare = request.dealCare,
-            sslYn = request.sslYn,
-            injeung = request.injeung,
-            baesongYejeong = request.baesongYejeong,
-            baesong = request.baesong,
-            clientBbs = request.clientBbs,
-            leave = request.leave,
-            kaesolYear = request.kaesolYear,
+        store.apply {
+            company = request.company
+            shopName = request.shopName
+            domainName = request.domainName
+            tel = request.tel
+            email = request.email
+            upjongNbr = request.upjongNbr
+            ypForm = request.ypForm
+            firstHeoDate = request.firstHeoDate
+            comAddr = request.comAddr
+            statNm = request.statNm
+            totRatingPoint = request.totRatingPoint
+            chogiRatingPoint = request.chogiRatingPoint
+            chungRatingPoint = request.chungRatingPoint
+            dealRatingPoint = request.dealRatingPoint
+            pyojunRatingPoint = request.pyojunRatingPoint
+            securityRatingPoint = request.securityRatingPoint
+            service = request.service
+            chung = request.chung
+            chogi = request.chogi
+            gyulje = request.gyulje
+            pyojun = request.pyojun
+            pInfoCare = request.pInfoCare
+            perInfo = request.perInfo
+            dealCare = request.dealCare
+            sslYn = request.sslYn
+            injeung = request.injeung
+            baesongYejeong = request.baesongYejeong
+            baesong = request.baesong
+            clientBbs = request.clientBbs
+            leave = request.leave
+            kaesolYear = request.kaesolYear
             regDate = request.regDate
-        )
+        }
 
         return storeRepository.save(store).toResponse()
     }
