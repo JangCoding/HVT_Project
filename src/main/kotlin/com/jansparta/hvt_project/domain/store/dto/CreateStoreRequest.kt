@@ -1,11 +1,8 @@
 package com.jansparta.hvt_project.domain.store.dto
 
-import com.jansparta.hvt_project.domain.store.model.SimpleStore
-import com.jansparta.hvt_project.domain.store.model.Store
-import jakarta.persistence.Column
+data class CreateStoreRequest(
+    // @field valid 추가 필요
 
-data class StoreResponse(
-    val id:Long,
     var company: String, // 상호
     var shopName: String?, // 쇼핑몰명
     var domainName: String?, // 도메인명
@@ -39,41 +36,3 @@ data class StoreResponse(
     var kaesolYear: String?, // 사이트개설년도
     var regDate: String // 모니터링날짜
 )
-
-fun Store.toResponse(): StoreResponse {
-    return StoreResponse(
-        id = id!!,
-        company = company,
-        shopName = shopName,
-        domainName = domainName,
-        tel = tel,
-        email = email,
-        upjongNbr = upjongNbr,
-        ypForm = ypForm,
-        firstHeoDate = firstHeoDate,
-        comAddr = comAddr,
-        statNm = statNm,
-        totRatingPoint = totRatingPoint,
-        chogiRatingPoint = chogiRatingPoint,
-        chungRatingPoint = chungRatingPoint,
-        dealRatingPoint = dealRatingPoint,
-        pyojunRatingPoint = pyojunRatingPoint,
-        securityRatingPoint = securityRatingPoint,
-        service = service,
-        chung = chung,
-        chogi = chogi,
-        gyulje = gyulje,
-        pyojun = pyojun,
-        pInfoCare = pInfoCare,
-        perInfo = perInfo,
-        dealCare = dealCare,
-        sslYn = sslYn,
-        injeung = injeung,
-        baesongYejeong = baesongYejeong,
-        baesong = baesong,
-        clientBbs = clientBbs,
-        leave = leave,
-        kaesolYear = kaesolYear,
-        regDate = regDate
-    )
-}
