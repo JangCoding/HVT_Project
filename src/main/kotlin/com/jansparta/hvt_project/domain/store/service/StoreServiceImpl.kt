@@ -1,9 +1,6 @@
 package com.jansparta.hvt_project.domain.store.service
 
-import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.StoreResponse
-import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.toResponse
+import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
@@ -113,13 +110,13 @@ class StoreServiceImpl(
         pageable: Pageable
     ) : Page<StoreResponse> {
 
-
-
-        TODO("Not yet implemented")
+        return storeRepository.getPagedStores(pageable).map{it.toResponse()}
     }
 
-    override fun getAllSimpleStores() {
-        TODO("Not yet implemented")
+    override fun getAllSimpleStores(
+        pageable : Pageable
+    ): Page<SimpleStoreResponse> {
+        return storeRepository.getPagedSimpleStores(pageable).map{it.toResponse()}
     }
 
     override fun getFilteredStores() {
