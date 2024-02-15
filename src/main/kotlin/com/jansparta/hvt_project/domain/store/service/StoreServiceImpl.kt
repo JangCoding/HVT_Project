@@ -1,6 +1,7 @@
 package com.jansparta.hvt_project.domain.store.service
 
 import com.jansparta.hvt_project.domain.store.dto.*
+import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
@@ -8,7 +9,6 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
@@ -110,13 +110,18 @@ class StoreServiceImpl(
         pageable: Pageable
     ) : Page<StoreResponse> {
 
-        return storeRepository.getPagedStores(pageable).map{it.toResponse()}
+        return storeRepository.getStores(pageable, Store::class.java)   // 제네릭 메서드로 통합
+            ?.map{it.toResponse()}
+            ?:throw NotFoundException()
     }
 
     override fun getAllSimpleStores(
         pageable : Pageable
     ): Page<SimpleStoreResponse> {
-        return storeRepository.getPagedSimpleStores(pageable).map{it.toResponse()}
+
+        return storeRepository.getStores(pageable, SimpleStore::class.java) // 제네릭 메서드로 통합
+            ?.map{it.toResponse()}
+            ?:throw NotFoundException()
     }
 
     override fun getFilteredStores() {

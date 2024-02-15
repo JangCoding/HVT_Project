@@ -16,32 +16,15 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 
     private val store = QStore.store
 
-    override fun getPagedStores(pageable: Pageable): Page<Store> {
+    override fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>? {
         val totalCounts = queryFactory
             .select(store.count())
             .from(store)
             .fetchOne()
             ?:0L
 
-        val contents = queryFactory
-            .selectFrom(store)
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(store.id.desc())
-            .fetch()
-
-        return PageImpl(contents, pageable, totalCounts )
-    }
-
-    override fun getPagedSimpleStores(pageable: Pageable): Page<SimpleStore> {
-        val totalCounts = queryFactory
-            .select(store.count())
-            .from(store)
-            .fetchOne()
-            ?:0L
-
-        val contents = queryFactory
-            .select(
+        val query = if (type == SimpleStore::class.java) {
+            queryFactory.select(
                 Projections.constructor(
                     SimpleStore::class.java,
                     store.id,
@@ -51,16 +34,72 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
                     store.tel,
                     store.email,
                     store.ypForm,
-                    store.comAddr ,
+                    store.comAddr,
                     store.statNm
                 )
             )
+        } else {
+            queryFactory.selectFrom(store)
+        }
+
+        val contents = query
             .from(store)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(store.id.desc())
-            .fetch()
+            .fetch() as List<T>
 
-        return PageImpl(contents, pageable, totalCounts )
+        return PageImpl(contents, pageable, totalCounts)
     }
 }
+
+
+//    override fun getPagedStores(pageable: Pageable): Page<Store> {
+//        val totalCounts = queryFactory
+//            .select(store.count())
+//            .from(store)
+//            .fetchOne()
+//            ?:0L
+//
+//        val contents = queryFactory
+//            .selectFrom(store)
+//            .offset(pageable.offset)
+//            .limit(pageable.pageSize.toLong())
+//            .orderBy(store.id.desc())
+//            .fetch()
+//
+//        return PageImpl(contents, pageable, totalCounts )
+//    }
+//
+//    override fun getPagedSimpleStores(pageable: Pageable): Page<SimpleStore> {
+//        val totalCounts = queryFactory
+//            .select(store.count())
+//            .from(store)
+//            .fetchOne()
+//            ?:0L
+//
+//        val contents = queryFactory
+//            .select(
+//                Projections.constructor(
+//                    SimpleStore::class.java,
+//                    store.id,
+//                    store.company,
+//                    store.shopName,
+//                    store.domainName,
+//                    store.tel,
+//                    store.email,
+//                    store.ypForm,
+//                    store.comAddr ,
+//                    store.statNm
+//                )
+//            )
+//            .from(store)
+//            .offset(pageable.offset)
+//            .limit(pageable.pageSize.toLong())
+//            .orderBy(store.id.desc())
+//            .fetch()
+//
+//        return PageImpl(contents, pageable, totalCounts )
+//    }
+
+
