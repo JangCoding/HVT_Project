@@ -3,6 +3,7 @@ package com.jansparta.hvt_project.domain.store.repository
 import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
+import com.jansparta.hvt_project.domain.store.model.statNmStatus
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
@@ -68,11 +69,11 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .fetchOne() ?: throw NotFoundException()
     }
 
-    override fun findByRatingAndStatus(rating: Int?, status: String?): List<Store> {
+    override fun findByRatingAndStatus(rating: Int?, statNmStatus: statNmStatus): List<Store> {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        statNmStatus.let { whereClause.and(store.statNm.eq(it)) }
 
         return queryFactory.selectFrom(store)
             .where(whereClause)
@@ -80,6 +81,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .limit(10)
             .fetch()
     }
+
 }
 
 // 제네릭 메서드로 통합

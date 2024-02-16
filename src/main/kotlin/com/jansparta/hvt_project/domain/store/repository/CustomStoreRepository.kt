@@ -2,6 +2,7 @@ package com.jansparta.hvt_project.domain.store.repository
 
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
+import com.jansparta.hvt_project.domain.store.model.statNmStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -12,7 +13,7 @@ interface CustomStoreRepository {
     fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?) : Store
   
   
-    fun findByRatingAndStatus(rating:Int?, status: String?) : List<Store>
+    fun findByRatingAndStatus(rating:Int?, statNmStatus: statNmStatus) : List<Store>
 }
 
 

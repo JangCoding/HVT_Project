@@ -3,6 +3,7 @@ package com.jansparta.hvt_project.domain.store.service
 import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
+import com.jansparta.hvt_project.domain.store.model.statNmStatus
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
@@ -38,7 +39,7 @@ class StoreServiceImpl(
                 ypForm = request.ypForm,
                 firstHeoDate = request.firstHeoDate,
                 comAddr = request.comAddr,
-                statNm = request.statNm,
+                statNm = statNmStatus.fromString(request.statNm)!!,
                 totRatingPoint = request.totRatingPoint,
                 chogiRatingPoint = request.chogiRatingPoint,
                 chungRatingPoint = request.chungRatingPoint,
@@ -78,7 +79,7 @@ class StoreServiceImpl(
             ypForm = request.ypForm
             firstHeoDate = request.firstHeoDate
             comAddr = request.comAddr
-            statNm = request.statNm
+            statNm = statNmStatus.fromString(request.statNm)!!
             totRatingPoint = request.totRatingPoint
             chogiRatingPoint = request.chogiRatingPoint
             chungRatingPoint = request.chungRatingPoint
