@@ -17,7 +17,7 @@ interface StoreService {
 
     fun getAllSimpleStores()
 
-    fun getFilteredStores()
+    fun getFilteredStores(rating: Int?, status: String?) : List<StoreResponse>
 
     fun getFilteredSimpleStore()
 

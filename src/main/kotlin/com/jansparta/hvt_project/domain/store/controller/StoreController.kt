@@ -4,14 +4,9 @@ import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import com.jansparta.hvt_project.domain.store.service.StoreService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/stores")
@@ -54,9 +49,13 @@ class StoreController (
     }
 
     @GetMapping("/filtered")
-    fun getFilteredStores()
-    {
-        TODO()
+    fun getFilteredStores(
+        @RequestParam(value = "rating", required = false) rating:Int?,
+        @RequestParam(value = "status", required = false) status:String?
+    ) : ResponseEntity<List<StoreResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(storeService.getFilteredStores(rating, status))
     }
 
     @GetMapping("/filtered/simple")
