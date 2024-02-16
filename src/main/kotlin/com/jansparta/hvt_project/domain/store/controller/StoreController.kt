@@ -11,14 +11,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/stores")
@@ -61,9 +54,13 @@ class StoreController (
         TODO()
     }
 
-    @GetMapping("{id}") // 업체 단건 조회
+    @GetMapping("/search") // 업체 단건 조회
     fun getStoreById(
-        @PathVariable id : Long
+        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
+        @RequestParam(value = "Id(아이디)", required = false) id : Long?,
+        @RequestParam(value = "Company(상호명)", required = false) company : String?,
+        @RequestParam(value = "shopName(쇼핑몰명)", required = false) shopName : String?,
+        @RequestParam(value = "tel(전화번호)", required = false) tel : String?,
     ) : ResponseEntity<StoreResponse>
     {
         TODO()
@@ -91,7 +88,7 @@ class StoreController (
 
 
 
-//    // 제네릭 활용하여 getStores() 로 통합
+//    // 제네릭 메서드 getStores() 로 통합
 //    @GetMapping("/all") // 업체 리스트 전체 조회
 //    fun getAllStores(
 //        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable
