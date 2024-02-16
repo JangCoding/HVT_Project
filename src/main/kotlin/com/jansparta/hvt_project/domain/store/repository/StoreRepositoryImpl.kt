@@ -33,24 +33,16 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
         status?.let { whereClause.and(store.statNm.eq(it)) }
+        cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
 
         val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L
 
-        val query = queryFactory.selectFrom(store)
+        val contents = queryFactory.selectFrom(store)
+            .where(whereClause)
             .limit(pageable.pageSize.toLong())
+            .orderBy(store.id.desc())
+            .fetch()
 
-        if (pageable.sort.isSorted) {
-            if(pageable.sort.first()?.property == "desc") query.orderBy(store.id.desc())
-            else query.orderBy(store.id.asc())
-        } else {
-            query.orderBy(store.id.asc())
-        }
-//
-//        cursorId?.let { whereClause.and(store.id.gt(it)) } // asc
-//        cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
-//        query.where(whereClause)
-
-        val contents = query.fetch()
         return PageImpl(contents, pageable, totalCount)
     }
 }
