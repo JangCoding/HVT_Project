@@ -5,13 +5,9 @@ import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import com.jansparta.hvt_project.domain.store.service.StoreService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
 
 @RestController
 @RequestMapping("/stores")
@@ -19,10 +15,17 @@ class StoreController (
     private val storeService : StoreService
 ){
     @PostMapping("/collection") // 업체 리스트 csv 불러오기
-    fun getStoresFromCSV()
+    fun getStoresFromCSV(@RequestParam("file")multipartFile: MultipartFile)
     {
-        TODO()
+        val tempFile = File.createTempFile("temp", null)
+        try {
+            multipartFile.transferTo(tempFile)
+            storeService.getStoresFromCSV(tempFile)
+        } finally {
+            tempFile.delete() // 파일 처리가 끝난 후에 임시 파일 삭제
+        }
     }
+
 
 
     @PostMapping("/create")
