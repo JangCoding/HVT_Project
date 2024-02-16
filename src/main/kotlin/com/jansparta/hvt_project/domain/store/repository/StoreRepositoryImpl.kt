@@ -3,7 +3,7 @@ package com.jansparta.hvt_project.domain.store.repository
 import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.domain.store.model.statNmStatus
+import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
@@ -63,13 +63,15 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         shopName?.let { whereClause.and(store.shopName.eq(shopName)) }
         tel?.let { whereClause.and(store.tel.eq(tel)) }
 
+
+
         return queryFactory
             .selectFrom(store)
             .where(whereClause)
             .fetchOne() ?: throw NotFoundException()
     }
 
-    override fun findByRatingAndStatus(rating: Int?, statNmStatus: statNmStatus): List<Store> {
+    override fun findByRatingAndStatus(rating: Int?, statNmStatus: StatNmStatus): List<Store> {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }

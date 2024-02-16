@@ -1,9 +1,6 @@
 package com.jansparta.hvt_project.domain.store.dto
 
-import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.domain.store.model.statNmStatus
-import jakarta.persistence.Column
 
 data class StoreResponse(
     val id:Long,

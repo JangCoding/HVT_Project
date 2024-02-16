@@ -26,7 +26,7 @@ class Store(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STAT_NM") // 업소상태
-    var statNm: statNmStatus,
+    var statNm: StatNmStatus,
 
     @Column(name = "TOT_RATINGPOINT") // 전체평가
     var totRatingPoint: Int,
