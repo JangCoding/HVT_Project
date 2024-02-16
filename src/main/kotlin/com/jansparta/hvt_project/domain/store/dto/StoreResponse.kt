@@ -1,5 +1,6 @@
 package com.jansparta.hvt_project.domain.store.dto
 
+import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 
 data class StoreResponse(
