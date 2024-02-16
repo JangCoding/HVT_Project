@@ -1,12 +1,6 @@
 package com.jansparta.hvt_project.domain.store.dto
 
 import com.jansparta.hvt_project.domain.store.model.Store
-<<<<<<< HEAD
-=======
-import jakarta.persistence.Column
-import java.time.LocalDate
-
->>>>>>> origin/feat/collection
 
 data class StoreResponse(
     val id:Long,
