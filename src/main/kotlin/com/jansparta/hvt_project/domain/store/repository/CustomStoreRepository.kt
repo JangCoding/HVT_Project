@@ -9,4 +9,5 @@ interface CustomStoreRepository {
 
     fun findByRatingAndStatus(rating:Int?, status: String?) : List<Store>
 
+    fun findByPageableAndFilter(pageable: Pageable, cursorId: Long?, rating:Int?, status: String?): Page<Store>
 }
