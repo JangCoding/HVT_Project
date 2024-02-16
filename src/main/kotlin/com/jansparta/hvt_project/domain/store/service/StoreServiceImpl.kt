@@ -1,16 +1,12 @@
 package com.jansparta.hvt_project.domain.store.service
 
-<<<<<<< HEAD
 import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
-=======
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
-import com.jansparta.hvt_project.domain.store.model.Store
->>>>>>> origin/feat/collection
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
@@ -65,7 +61,7 @@ class StoreServiceImpl(
                     ypForm = data[6].ifEmpty { null },
                     firstHeoDate = LocalDate.parse(data[7], DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString(),
                     comAddr = data[8].ifEmpty { null },
-                    statNm = data[9].ifEmpty { null },
+                    statNm = StatNmStatus.fromString(data[9]),
                     totRatingPoint = data[10].toIntOrNull(),
                     chogiRatingPoint = data[11].toIntOrNull(),
                     chungRatingPoint = data[12].toIntOrNull(),

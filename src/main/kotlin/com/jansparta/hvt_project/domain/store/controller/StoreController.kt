@@ -12,11 +12,8 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-<<<<<<< HEAD
-=======
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
->>>>>>> origin/feat/collection
 
 @RestController
 @RequestMapping("/stores")
@@ -35,13 +32,7 @@ class StoreController (
         }
     }
 
-
-<<<<<<< HEAD
     @PostMapping("/create") // 업체 등록 . 상호명으로 중복 판단
-=======
-
-    @PostMapping("/create")
->>>>>>> origin/feat/collection
     fun createStore(
         @RequestBody request : CreateStoreRequest
     ) : ResponseEntity<StoreResponse>
