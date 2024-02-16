@@ -1,11 +1,11 @@
 package com.jansparta.hvt_project.domain.store.controller
 
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
-import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.service.StoreService
+import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -55,15 +55,14 @@ class StoreController (
     }
 
     @GetMapping("/search") // 업체 단건 조회
-    fun getStoreById(
-        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
+    fun getStoreBy(
         @RequestParam(value = "Id(아이디)", required = false) id : Long?,
         @RequestParam(value = "Company(상호명)", required = false) company : String?,
         @RequestParam(value = "shopName(쇼핑몰명)", required = false) shopName : String?,
         @RequestParam(value = "tel(전화번호)", required = false) tel : String?,
     ) : ResponseEntity<StoreResponse>
     {
-        TODO()
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreBy(id,company,shopName,tel))
     }
 
 

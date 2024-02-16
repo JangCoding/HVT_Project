@@ -16,13 +16,11 @@ interface StoreService {
 
     fun updateStore( request : UpdateStoreRequest , id : Long) : StoreResponse
 
-
-
     fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
     fun getFilteredStores()
     fun getFilteredSimpleStore()
 
-    fun getStoreById( id : Long ) : StoreResponse
+    fun getStoreBy( id : Long? , company : String? , shopName : String? , tel : String? ) : StoreResponse
 }
 
 

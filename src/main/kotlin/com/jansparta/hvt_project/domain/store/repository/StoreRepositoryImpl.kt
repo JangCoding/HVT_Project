@@ -4,7 +4,9 @@ import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
+import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -50,6 +52,20 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .fetch() as List<T>
 
         return PageImpl(contents, pageable, totalCounts)
+    }
+
+    override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): Store {
+
+        var whereClause = BooleanBuilder()
+        id?.let { whereClause.and(store.id.eq(id)) }
+        company?.let { whereClause.and(store.company.eq(company)) }
+        shopName?.let { whereClause.and(store.shopName.eq(shopName)) }
+        tel?.let { whereClause.and(store.tel.eq(tel)) }
+
+        return queryFactory
+            .selectFrom(store)
+            .where(whereClause)
+            .fetchOne() ?: throw NotFoundException()
     }
 }
 

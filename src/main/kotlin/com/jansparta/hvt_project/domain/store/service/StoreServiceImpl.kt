@@ -124,8 +124,11 @@ class StoreServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getStoreById(id: Long): StoreResponse {
-        TODO("Not yet implemented")
+    override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
+        if(id == null && company == null && shopName == null && tel == null)
+            throw NotFoundException()
+
+        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
     }
 }
 

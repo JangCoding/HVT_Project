@@ -9,6 +9,7 @@ interface CustomStoreRepository {
     //QueryDSL 작성
     fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>?
 
+    fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?) : Store
 }
 
 
