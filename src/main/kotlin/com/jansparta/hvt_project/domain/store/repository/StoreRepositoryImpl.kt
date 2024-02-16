@@ -67,9 +67,20 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .where(whereClause)
             .fetchOne() ?: throw NotFoundException()
     }
+
+    override fun findByRatingAndStatus(rating: Int?, status: String?): List<Store> {
+        val whereClause = BooleanBuilder()
+
+        rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(it)) }
+
+        return queryFactory.selectFrom(store)
+            .where(whereClause)
+            .orderBy(store.regDate.desc())
+            .limit(10)
+            .fetch()
+    }
 }
-
-
 
 // 제네릭 메서드로 통합
 //    fun getPagedStores(pageable: Pageable): Page<Store> {
@@ -119,5 +130,3 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 //
 //        return PageImpl(contents, pageable, totalCounts )
 //    }
-
-

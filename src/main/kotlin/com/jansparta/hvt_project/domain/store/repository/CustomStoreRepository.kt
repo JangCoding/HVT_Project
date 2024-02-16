@@ -10,6 +10,9 @@ interface CustomStoreRepository {
     fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>?
 
     fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?) : Store
+  
+  
+    fun findByRatingAndStatus(rating:Int?, status: String?) : List<Store>
 }
 
 
