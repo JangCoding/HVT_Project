@@ -7,13 +7,13 @@ import org.springframework.data.domain.Pageable
 
 interface CustomStoreRepository {
     //QueryDSL 작성
-
-//    fun getPagedStores(pageable: Pageable) : Page<Store>
-//
-//    fun getPagedSimpleStores(pageable: Pageable) : Page<SimpleStore>
-
-
-    // 제네릭 메서드로 통합
     fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>?
 
 }
+
+
+
+
+// 제네릭 메서드로 통합
+//    fun getPagedStores(pageable: Pageable) : Page<Store>
+//    fun getPagedSimpleStores(pageable: Pageable) : Page<SimpleStore>

@@ -106,24 +106,6 @@ class StoreServiceImpl(
         return storeRepository.save(store).toResponse()
     }
 
-    override fun getAllStores(
-        pageable: Pageable
-    ) : Page<StoreResponse> {
-
-        return storeRepository.getStores(pageable, Store::class.java)   // 제네릭 메서드로 통합
-            ?.map{it.toResponse()}
-            ?:throw NotFoundException()
-    }
-
-    override fun getAllSimpleStores(
-        pageable : Pageable
-    ): Page<SimpleStoreResponse> {
-
-        return storeRepository.getStores(pageable, SimpleStore::class.java) // 제네릭 메서드로 통합
-            ?.map{it.toResponse()}
-            ?:throw NotFoundException()
-    }
-
     override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
 
          return if(toSimple){
@@ -146,3 +128,23 @@ class StoreServiceImpl(
         TODO("Not yet implemented")
     }
 }
+
+
+// 제네릭 메서드 getStoreList 로 통합
+//override fun getAllStores(
+//    pageable: Pageable
+//) : Page<StoreResponse> {
+//
+//    return storeRepository.getStores(pageable, Store::class.java)   // 제네릭 메서드로 통합
+//        ?.map{it.toResponse()}
+//        ?:throw NotFoundException()
+//}
+//
+//override fun getAllSimpleStores(
+//    pageable : Pageable
+//): Page<SimpleStoreResponse> {
+//
+//    return storeRepository.getStores(pageable, SimpleStore::class.java) // 제네릭 메서드로 통합
+//        ?.map{it.toResponse()}
+//        ?:throw NotFoundException()
+//}
