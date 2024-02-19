@@ -5,10 +5,12 @@ import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.Where
 
 @Entity
 @Table(name = "stores")
-//@SQLDelete(sql = "UPDATE stores SET isDeleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE stores SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false OR is_deleted IS NULL")
 @OnDelete(action = OnDeleteAction.CASCADE)
 class Store(
     @Column(name = "COMPANY") // 상호
