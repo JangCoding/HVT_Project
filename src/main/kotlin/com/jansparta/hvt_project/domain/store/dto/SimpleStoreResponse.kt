@@ -1,6 +1,7 @@
 package com.jansparta.hvt_project.domain.store.dto
 
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
+import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 
 data class SimpleStoreResponse(
     val id:Long,
@@ -24,6 +25,6 @@ fun SimpleStore.toResponse(): SimpleStoreResponse {
         email = email,
         ypForm = ypForm,
         comAddr = comAddr,
-        statNm = statNm,
+        statNm = statNm.name,
     )
 }

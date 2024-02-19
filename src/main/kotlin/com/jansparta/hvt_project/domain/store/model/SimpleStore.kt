@@ -1,5 +1,7 @@
 package com.jansparta.hvt_project.domain.store.model
 
+import jakarta.persistence.Column
+
 data class SimpleStore(
     val id:Long,
     var company: String, // 상호
@@ -9,5 +11,5 @@ data class SimpleStore(
     var email: String?, // 운영자이메일
     var ypForm: String?,  // 영업형태
     var comAddr: String?,     // 회사주소
-    var statNm: String,   // 업소상태
+    var statNm: StatNmStatus,
 )

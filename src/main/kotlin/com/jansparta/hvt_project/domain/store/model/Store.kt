@@ -11,7 +11,7 @@ import org.hibernate.annotations.Where
 @Table(name = "stores")
 @SQLDelete(sql = "UPDATE stores SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false OR is_deleted IS NULL")
-@OnDelete(action = OnDeleteAction.CASCADE)
+
 class Store(
     @Column(name = "COMPANY") // 상호
     var company: String?,
