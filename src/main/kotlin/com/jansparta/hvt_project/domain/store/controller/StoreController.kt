@@ -49,18 +49,6 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
     }
 
-//    @GetMapping("/filtered") // 업체 리스트 필터 조회
-//    fun getFilteredStores()
-//    {
-//        TODO()
-//    }
-
-    @GetMapping("/filtered/simple") // 업체 리스트 필터 조회(단순조회)
-    fun getFilteredSimpleStore()
-    {
-        TODO()
-    }
-
     @GetMapping("/filtered")
     fun getFilteredStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
@@ -81,6 +69,12 @@ class StoreController (
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(storeService.getFilteredStorePage(pageable, cursorId, rating, status))
+    }
+
+    @GetMapping("/pagenated/simple")
+    fun getFilteredSimpleStorePage()
+    {
+        TODO()
     }
 
     @GetMapping("/search") // 업체 단건 조회

@@ -188,10 +188,6 @@ class StoreServiceImpl(
          }
     }
 
-    override fun getFilteredStores() {
-        TODO("Not yet implemented")
-    }
-
     override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
         return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
     }
@@ -205,7 +201,7 @@ class StoreServiceImpl(
         return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
-    override fun getFilteredSimpleStore() {
+    override fun getFilteredSimpleStorePage() {
         TODO("Not yet implemented")
     }
 
