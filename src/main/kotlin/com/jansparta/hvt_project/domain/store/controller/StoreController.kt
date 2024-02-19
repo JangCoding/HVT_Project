@@ -32,7 +32,6 @@ class StoreController (
         }
     }
 
-
     @PostMapping("/create") // 업체 등록 . 상호명으로 중복 판단
     fun createStore(
         @RequestBody request : CreateStoreRequest
@@ -50,11 +49,11 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
     }
 
-    @GetMapping("/filtered") // 업체 리스트 필터 조회
-    fun getFilteredStores()
-    {
-        TODO()
-    }
+//    @GetMapping("/filtered") // 업체 리스트 필터 조회
+//    fun getFilteredStores()
+//    {
+//        TODO()
+//    }
 
     @GetMapping("/filtered/simple") // 업체 리스트 필터 조회(단순조회)
     fun getFilteredSimpleStore()
@@ -84,12 +83,6 @@ class StoreController (
             .body(storeService.getFilteredStorePage(pageable, cursorId, rating, status))
     }
 
-
-    @GetMapping("/filtered/simple")
-    fun getFilteredSimpleStore()
-  {TODO()}
-    
-    
     @GetMapping("/search") // 업체 단건 조회
     fun getStoreBy(
         @RequestParam(value = "Id(아이디)", required = false) id : Long?,

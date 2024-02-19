@@ -7,15 +7,10 @@ import com.jansparta.hvt_project.domain.store.dto.toResponse
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
-import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.File
@@ -191,6 +186,10 @@ class StoreServiceImpl(
         else {
              storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
          }
+    }
+
+    override fun getFilteredStores() {
+        TODO("Not yet implemented")
     }
 
     override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
