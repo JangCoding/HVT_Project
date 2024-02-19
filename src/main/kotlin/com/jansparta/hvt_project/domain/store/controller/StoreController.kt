@@ -12,6 +12,8 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
 
 @RestController
 @RequestMapping("/stores")
@@ -19,9 +21,15 @@ class StoreController (
     private val storeService : StoreService
 ){
     @PostMapping("/collection") // 업체 리스트 csv 불러오기
-    fun getStoresFromCSV()
+    fun getStoresFromCSV(@RequestParam("file")multipartFile: MultipartFile)
     {
-        TODO()
+        val tempFile = File.createTempFile("temp", null)
+        try {
+            multipartFile.transferTo(tempFile)
+            storeService.getStoresFromCSV(tempFile)
+        } finally {
+            tempFile.delete() // 파일 처리가 끝난 후에 임시 파일 삭제
+        }
     }
 
 
