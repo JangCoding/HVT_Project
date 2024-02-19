@@ -1,6 +1,7 @@
 package com.jansparta.hvt_project.domain.store.repository
 
 import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
+import com.jansparta.hvt_project.domain.store.model.QSimpleStore
 import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
@@ -139,8 +140,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 
         val contents = queryFactory
             .select(
-                Projections.constructor(
-                    SimpleStore::class.java,
+                QSimpleStore(
                     store.id,
                     store.company,
                     store.shopName,
