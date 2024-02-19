@@ -212,4 +212,14 @@ class StoreServiceImpl(
 
         return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
     }
+
+    override fun deleteStore(id: Long) {
+        val store = storeRepository.findByIdOrNull(id)
+            ?:throw NotFoundException()
+
+        store.isDeleted = false
+
+        storeRepository.delete(store)
+
+    }
 }

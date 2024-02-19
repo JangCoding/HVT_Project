@@ -110,7 +110,8 @@ class StoreController (
         @PathVariable id:Long
     ) : ResponseEntity<Unit>
     {
-        TODO()
+        storeService.deleteStore(id)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
 }

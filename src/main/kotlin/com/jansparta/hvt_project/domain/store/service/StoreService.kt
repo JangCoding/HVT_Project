@@ -29,4 +29,6 @@ interface StoreService {
     fun getFilteredSimpleStore()
 
     fun getStoreBy( id : Long? , company : String? , shopName : String? , tel : String? ) : StoreResponse
+
+    fun deleteStore( id:Long )
 }
