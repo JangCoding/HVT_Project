@@ -1,5 +1,6 @@
 package com.jansparta.hvt_project.domain.store.model
 
+import com.jansparta.hvt_project.infra.BaseEntity
 import jakarta.persistence.*
 import java.time.LocalDate
 
@@ -73,7 +74,7 @@ class Store(
     var kaesolYear: String?,
     @Column(name = "REG_DATE") // 모니터링날짜
     var regDate: String?
-){
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

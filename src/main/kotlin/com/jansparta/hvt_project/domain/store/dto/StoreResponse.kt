@@ -2,6 +2,7 @@ package com.jansparta.hvt_project.domain.store.dto
 
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
+import java.time.LocalDateTime
 
 data class StoreResponse(
     val id:Long,
@@ -36,7 +37,9 @@ data class StoreResponse(
     var clientBbs: String?, // 고객불만게시판운영
     var leave: String?, // 회원탈퇴방법
     var kaesolYear: String?, // 사이트개설년도
-    var regDate: String? // 모니터링날짜
+    var regDate: String?, // 모니터링날짜
+    var createdDate : LocalDateTime?, // 생성일자
+    var modifiedDate : LocalDateTime? // 수정일자
 )
 
 fun Store.toResponse(): StoreResponse {
@@ -73,6 +76,8 @@ fun Store.toResponse(): StoreResponse {
         clientBbs = clientBbs,
         leave = leave,
         kaesolYear = kaesolYear,
-        regDate = regDate
+        regDate = regDate,
+        createdDate =createdDate,
+        modifiedDate = modifiedDate,
     )
 }
