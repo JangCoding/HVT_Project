@@ -13,11 +13,6 @@ interface CustomStoreRepository {
   
   
     fun findByRatingAndStatus(rating:Int?, status: String?) : List<Store>
+  
+    fun findByPageableAndFilter(pageable: Pageable, cursorId: Long?, rating:Int?, status: String?): Page<Store>
 }
-
-
-
-
-// 제네릭 메서드로 통합
-//    fun getPagedStores(pageable: Pageable) : Page<Store>
-//    fun getPagedSimpleStores(pageable: Pageable) : Page<SimpleStore>
