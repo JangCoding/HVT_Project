@@ -1,12 +1,16 @@
 package com.jansparta.hvt_project.domain.store.service
 
-import com.jansparta.hvt_project.domain.store.dto.*
-import com.jansparta.hvt_project.domain.store.model.SimpleStore
-import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
+import com.jansparta.hvt_project.domain.store.dto.toResponse
+import com.jansparta.hvt_project.domain.store.repository.StoreRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.http.ResponseEntity
+import com.jansparta.hvt_project.domain.store.dto.*
+import com.jansparta.hvt_project.domain.store.model.SimpleStore
+import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
@@ -189,8 +193,17 @@ class StoreServiceImpl(
          }
     }
 
-    override fun getFilteredStores() {
-        TODO("Not yet implemented")
+    override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
+        return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
+    }
+
+    override fun getFilteredStorePage(
+        pageable: Pageable,
+        cursorId: Long?,
+        rating: Int?,
+        status: String?
+    ): Page<StoreResponse> {
+        return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
     override fun getFilteredSimpleStore() {
@@ -204,23 +217,3 @@ class StoreServiceImpl(
         return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
     }
 }
-
-
-// 제네릭 메서드 getStoreList 로 통합
-//override fun getAllStores(
-//    pageable: Pageable
-//) : Page<StoreResponse> {
-//
-//    return storeRepository.getStores(pageable, Store::class.java)   // 제네릭 메서드로 통합
-//        ?.map{it.toResponse()}
-//        ?:throw NotFoundException()
-//}
-//
-//override fun getAllSimpleStores(
-//    pageable : Pageable
-//): Page<SimpleStoreResponse> {
-//
-//    return storeRepository.getStores(pageable, SimpleStore::class.java) // 제네릭 메서드로 통합
-//        ?.map{it.toResponse()}
-//        ?:throw NotFoundException()
-//}

@@ -32,6 +32,7 @@ class StoreController (
         }
     }
 
+
     @PostMapping("/create") // 업체 등록 . 상호명으로 중복 판단
     fun createStore(
         @RequestBody request : CreateStoreRequest
@@ -61,6 +62,34 @@ class StoreController (
         TODO()
     }
 
+    @GetMapping("/filtered")
+    fun getFilteredStoreList(
+        @RequestParam(value = "rating", required = false) rating:Int?,
+        @RequestParam(value = "status", required = false) status:String?
+    ) : ResponseEntity<List<StoreResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(storeService.getFilteredStoreList(rating, status))
+    }
+
+    @GetMapping("/pagenated")
+    fun getFilteredStorePage(
+        @PageableDefault(size = 10) pageable: Pageable,
+        @RequestParam(value = "cursorId", required = false) cursorId: Long?,
+        @RequestParam(value = "rating", required = false) rating:Int?,
+        @RequestParam(value = "status", required = false) status:String?
+    ) : ResponseEntity<Page<StoreResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(storeService.getFilteredStorePage(pageable, cursorId, rating, status))
+    }
+
+
+    @GetMapping("/filtered/simple")
+    fun getFilteredSimpleStore()
+  {TODO()}
+    
+    
     @GetMapping("/search") // 업체 단건 조회
     fun getStoreBy(
         @RequestParam(value = "Id(아이디)", required = false) id : Long?,
@@ -91,23 +120,3 @@ class StoreController (
     }
 
 }
-
-
-
-//    // 제네릭 메서드 getStores() 로 통합
-//    @GetMapping("/all") // 업체 리스트 전체 조회
-//    fun getAllStores(
-//        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable
-//
-//    ) : ResponseEntity<Page<StoreResponse>>
-//    {
-//        return ResponseEntity.status(HttpStatus.OK).body(storeService.getAllStores(pageable))
-//    }
-//
-//    @GetMapping("/all/simple") // 업체 리스트 전체 조회(단순조회)
-//    fun getAllSimpleStores(
-//    @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable
-//    ) : ResponseEntity<Page<SimpleStoreResponse>>
-//    {
-//        return ResponseEntity.status(HttpStatus.OK).body(storeService.getAllSimpleStores(pageable))
-//    }

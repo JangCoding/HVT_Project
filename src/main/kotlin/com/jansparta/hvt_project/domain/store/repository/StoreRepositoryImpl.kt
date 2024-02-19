@@ -84,53 +84,21 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .fetch()
     }
 
-}
+    override fun findByPageableAndFilter(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<Store> {
+        val whereClause = BooleanBuilder()
 
-// 제네릭 메서드로 통합
-//    fun getPagedStores(pageable: Pageable): Page<Store> {
-//        val totalCounts = queryFactory
-//            .select(store.count())
-//            .from(store)
-//            .fetchOne()
-//            ?:0L
-//
-//        val contents = queryFactory
-//            .selectFrom(store)
-//            .offset(pageable.offset)
-//            .limit(pageable.pageSize.toLong())
-//            .orderBy(store.id.desc())
-//            .fetch()
-//
-//        return PageImpl(contents, pageable, totalCounts )
-//    }
-//
-//    override fun getPagedSimpleStores(pageable: Pageable): Page<SimpleStore> {
-//        val totalCounts = queryFactory
-//            .select(store.count())
-//            .from(store)
-//            .fetchOne()
-//            ?:0L
-//
-//        val contents = queryFactory
-//            .select(
-//                Projections.constructor(
-//                    SimpleStore::class.java,
-//                    store.id,
-//                    store.company,
-//                    store.shopName,
-//                    store.domainName,
-//                    store.tel,
-//                    store.email,
-//                    store.ypForm,
-//                    store.comAddr ,
-//                    store.statNm
-//                )
-//            )
-//            .from(store)
-//            .offset(pageable.offset)
-//            .limit(pageable.pageSize.toLong())
-//            .orderBy(store.id.desc())
-//            .fetch()
-//
-//        return PageImpl(contents, pageable, totalCounts )
-//    }
+        rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(it)) }
+        cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
+
+        val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L
+
+        val contents = queryFactory.selectFrom(store)
+            .where(whereClause)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(store.id.desc())
+            .fetch()
+
+        return PageImpl(contents, pageable, totalCount)
+    }
+}
