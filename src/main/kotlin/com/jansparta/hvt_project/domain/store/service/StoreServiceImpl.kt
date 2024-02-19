@@ -1,9 +1,6 @@
 package com.jansparta.hvt_project.domain.store.service
 
-import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.StoreResponse
-import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.toResponse
+import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -192,6 +189,10 @@ class StoreServiceImpl(
         return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
     }
 
+    override fun getFilteredSimpleStoreList(rating: Int?, status: String?): List<SimpleStoreResponse> {
+        return storeRepository.findSimpleByRatingAndStatus(rating, status).map { it.toResponse() }
+    }
+
     override fun getFilteredStorePage(
         pageable: Pageable,
         cursorId: Long?,
@@ -201,8 +202,13 @@ class StoreServiceImpl(
         return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
-    override fun getFilteredSimpleStorePage() {
-        TODO("Not yet implemented")
+    override fun getFilteredSimpleStorePage(
+        pageable: Pageable,
+        cursorId: Long?,
+        rating: Int?,
+        status: String?
+    ): Page<SimpleStoreResponse> {
+        return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {

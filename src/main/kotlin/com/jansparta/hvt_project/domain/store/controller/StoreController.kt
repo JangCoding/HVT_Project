@@ -1,6 +1,7 @@
 package com.jansparta.hvt_project.domain.store.controller
 
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
+import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import com.jansparta.hvt_project.domain.store.service.StoreService
@@ -59,6 +60,16 @@ class StoreController (
             .body(storeService.getFilteredStoreList(rating, status))
     }
 
+    @GetMapping("/filtered/simple")
+    fun getFilteredSimpleStoreList(
+        @RequestParam(value = "rating", required = false) rating:Int?,
+        @RequestParam(value = "status", required = false) status:String?
+    ) : ResponseEntity<List<SimpleStoreResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(storeService.getFilteredSimpleStoreList(rating, status))
+    }
+
     @GetMapping("/pagenated")
     fun getFilteredStorePage(
         @PageableDefault(size = 10) pageable: Pageable,
@@ -72,9 +83,15 @@ class StoreController (
     }
 
     @GetMapping("/pagenated/simple")
-    fun getFilteredSimpleStorePage()
-    {
-        TODO()
+    fun getFilteredSimpleStorePage(
+        @PageableDefault(size = 10) pageable: Pageable,
+        @RequestParam(value = "cursorId", required = false) cursorId: Long?,
+        @RequestParam(value = "rating", required = false) rating:Int?,
+        @RequestParam(value = "status", required = false) status:String?
+    ) : ResponseEntity<Page<SimpleStoreResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(storeService.getFilteredSimpleStorePage(pageable, cursorId, rating, status))
     }
 
     @GetMapping("/search") // 업체 단건 조회

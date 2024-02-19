@@ -1,5 +1,6 @@
 package com.jansparta.hvt_project.domain.store.repository
 
+import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
@@ -81,6 +82,34 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .fetch()
     }
 
+    override fun findSimpleByRatingAndStatus(rating: Int?, status: String?): List<SimpleStore> {
+        val whereClause = BooleanBuilder()
+
+        rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(it)) }
+
+        return queryFactory
+            .select(
+                Projections.constructor(
+                    SimpleStore::class.java,
+                    store.id,
+                    store.company,
+                    store.shopName,
+                    store.domainName,
+                    store.tel,
+                    store.email,
+                    store.ypForm,
+                    store.comAddr,
+                    store.statNm
+                )
+            )
+            .from(store)
+            .where(whereClause)
+            .orderBy(store.regDate.desc())
+            .limit(10)
+            .fetch()
+    }
+
     override fun findByPageableAndFilter(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<Store> {
         val whereClause = BooleanBuilder()
 
@@ -91,6 +120,39 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L
 
         val contents = queryFactory.selectFrom(store)
+            .where(whereClause)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(store.id.desc())
+            .fetch()
+
+        return PageImpl(contents, pageable, totalCount)
+    }
+
+    override fun findSimpleByPageableAndFilter(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<SimpleStore> {
+        val whereClause = BooleanBuilder()
+
+        rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(it)) }
+        cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
+
+        val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L
+
+        val contents = queryFactory
+            .select(
+                Projections.constructor(
+                    SimpleStore::class.java,
+                    store.id,
+                    store.company,
+                    store.shopName,
+                    store.domainName,
+                    store.tel,
+                    store.email,
+                    store.ypForm,
+                    store.comAddr,
+                    store.statNm
+                )
+            )
+            .from(store)
             .where(whereClause)
             .limit(pageable.pageSize.toLong())
             .orderBy(store.id.desc())
