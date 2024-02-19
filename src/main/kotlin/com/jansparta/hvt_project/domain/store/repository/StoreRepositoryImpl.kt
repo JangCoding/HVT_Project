@@ -2,8 +2,8 @@ package com.jansparta.hvt_project.domain.store.repository
 
 import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
-import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
+import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
@@ -71,11 +71,11 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .fetchOne() ?: throw NotFoundException()
     }
 
-    override fun findByRatingAndStatus(rating: Int?, statNmStatus: StatNmStatus): List<Store> {
+    override fun findByRatingAndStatus(rating: Int?, status: String?): List<Store> {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        statNmStatus.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
 
         return queryFactory.selectFrom(store)
             .where(whereClause)
@@ -88,7 +88,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
         cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
 
         val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L

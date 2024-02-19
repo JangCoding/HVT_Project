@@ -24,9 +24,11 @@ class Store(
     var firstHeoDate: String?,
     @Column(name = "COM_ADDR") // 회사주소
     var comAddr: String?,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "STAT_NM") // 업소상태
     var statNm: StatNmStatus,
+
     @Column(name = "TOT_RATINGPOINT") // 전체평가
     var totRatingPoint: Int?,
     @Column(name = "CHOGI_RATINGPOINT") // 사업자정보표시평가

@@ -26,14 +26,7 @@ interface StoreService {
 
     fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
 
-  
-   fun getFilteredStores()
     fun getFilteredSimpleStore()
 
     fun getStoreBy( id : Long? , company : String? , shopName : String? , tel : String? ) : StoreResponse
 }
-
-
-// 제네릭 메서드 getStoreList() 로 통합
-//fun getAllStores( pageable : Pageable) : Page<StoreResponse>
-//fun getAllSimpleStores( pageable : Pageable ): Page<SimpleStoreResponse>

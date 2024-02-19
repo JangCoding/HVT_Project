@@ -11,7 +11,7 @@ enum class StatNmStatus  {
 
 
     companion object {
-        fun fromString(value: String): StatNmStatus {
+        fun fromString(value: String): StatNmStatus { // String 값을 Enum 값으로 변환
             return when (value) {
                 "사이트운영중단" -> 사이트운영중단
                 "휴업중" -> 휴업중
