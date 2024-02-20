@@ -1,18 +1,20 @@
 package com.jansparta.hvt_project.domain.store.dto
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 
-data class SimpleStoreResponse(
-    val id:Long,
-    var company: String, // 상호
-    var shopName: String?, // 쇼핑몰명
-    var domainName: String?,  // 도메인명
-    var tel: String?,    // 전화번호
-    var email: String?, // 운영자이메일
-    var ypForm: String?,  // 영업형태
-    var comAddr: String?,     // 회사주소
-    var statNm: String,   // 업소상태
+data class SimpleStoreResponse @JsonCreator constructor(
+    @JsonProperty("id") val id: Long,
+    @JsonProperty("company") var company: String,
+    @JsonProperty("shopName") var shopName: String?,
+    @JsonProperty("domainName") var domainName: String?,
+    @JsonProperty("tel") var tel: String?,
+    @JsonProperty("email") var email: String?,
+    @JsonProperty("ypForm") var ypForm: String?,
+    @JsonProperty("comAddr") var comAddr: String?,
+    @JsonProperty("statNm") var statNm: String
 )
 
 fun SimpleStore.toResponse(): SimpleStoreResponse {

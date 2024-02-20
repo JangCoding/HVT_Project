@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.repository.findByIdOrNull
@@ -179,6 +180,7 @@ class StoreServiceImpl(
         return storeRepository.save(store).toResponse()
     }
 
+    @Cacheable("storeListCache", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }")
     override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
 
          return if(toSimple){
@@ -206,6 +208,7 @@ class StoreServiceImpl(
         TODO("Not yet implemented")
     }
 
+    @Cacheable("storeCache", key = "{#id}")
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
         if(id == null && company == null && shopName == null && tel == null)
             throw NotFoundException()

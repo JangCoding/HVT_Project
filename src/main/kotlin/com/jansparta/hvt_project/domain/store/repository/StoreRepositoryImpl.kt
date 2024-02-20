@@ -4,6 +4,7 @@ import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
+import com.jansparta.hvt_project.infra.Redis.CustomPageImpl
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
@@ -52,7 +53,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .orderBy(store.id.desc())
             .fetch() as List<T>
 
-        return PageImpl(contents, pageable, totalCounts)
+        return CustomPageImpl(contents, pageable, totalCounts)
     }
 
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): Store {
