@@ -3,7 +3,6 @@ spring:
     url: jdbc:postgresql://aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres
     username : postgres.uxatsjztfknsrmpcwiqt
     password : VSFD2rknE4zCrsSG
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,6 +18,13 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  data:
+    redis:
+      port: 6379        # 레디스 포트 , 호스트 설정
+      host: localhost
+      #password: "lunaeker2"
+  cache:
+    type: redis # 캐싱 타입 레디스
 logging:
   level:
     org:
