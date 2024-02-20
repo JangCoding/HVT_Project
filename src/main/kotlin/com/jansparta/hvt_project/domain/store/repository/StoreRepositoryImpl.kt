@@ -20,7 +20,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 
     private val store = QStore.store
 
-    override fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>? {
+    override fun <T> getStores(pageable: Pageable, type: Class<T>): PageImpl<T>? {
         val totalCounts = queryFactory
             .select(store.count())
             .from(store)
@@ -53,7 +53,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
             .orderBy(store.id.desc())
             .fetch() as List<T>
 
-        return CustomPageImpl(contents, pageable, totalCounts)
+        return PageImpl(contents, pageable, totalCounts)
     }
 
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): Store {

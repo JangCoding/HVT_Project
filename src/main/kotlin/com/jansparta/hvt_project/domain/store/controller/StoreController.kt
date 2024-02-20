@@ -4,9 +4,12 @@ import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import com.jansparta.hvt_project.domain.store.service.StoreService
+import com.jansparta.hvt_project.infra.Redis.CustomPageImpl
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
@@ -42,10 +45,11 @@ class StoreController (
     }
 
     @GetMapping() // 업체 리스트 전체 조회
+    @Cacheable("storeListCache")
     fun <T> getStores(
         @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
         toSimple : Boolean // Projection 적용 여부
-    ) : ResponseEntity<Page<T>>
+    ) : ResponseEntity<PageImpl<T>>
     {
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
     }

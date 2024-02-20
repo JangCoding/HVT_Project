@@ -6,7 +6,7 @@ import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 import java.time.LocalDateTime
 
-data class StoreResponse @JsonCreator constructor(
+data class StoreResponse constructor(
     @JsonProperty("id") val id: Long,
     @JsonProperty("company") var company: String?,
     @JsonProperty("shopName") var shopName: String?,
