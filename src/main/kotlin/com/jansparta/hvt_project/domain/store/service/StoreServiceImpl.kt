@@ -36,8 +36,8 @@ class StoreServiceImpl(
         }
 
         val lines = file.readLines()
-
-        lines.forEach { line ->
+        val stores = mutableListOf<Store>()
+        lines.forEachIndexed {index, line ->
             try {
                 // 따옴표로 묶인 필드를 올바르게 처리하는 정규식
                 val regex = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex()  // 따옴표로 묶인 필드를 올바르게 처리하는 정규식
@@ -81,12 +81,19 @@ class StoreServiceImpl(
                     kaesolYear = data[30].ifEmpty { null },
                     regDate = LocalDate.parse(data[31], DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()
                 )
+                stores.add(store)
 
-                storeRepository.save(store)
+                if ((index + 1) % 100 == 0) {
+                    storeRepository.saveAll(stores)
+                    stores.clear()
+                }
             } catch (e: Exception) {
                 println("데이터 저장 중 에러가 발생했습니다: $line")
                 e.printStackTrace()
             }
+        }
+        if (stores.isNotEmpty()) {
+            storeRepository.saveAll(stores)
         }
     }
 
