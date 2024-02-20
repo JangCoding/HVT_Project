@@ -1,21 +1,13 @@
 package com.jansparta.hvt_project.domain.store.service
 
-import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.StoreResponse
-import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.toResponse
+import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
-import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.File
@@ -44,8 +36,8 @@ class StoreServiceImpl(
         }
 
         val lines = file.readLines()
-
-        lines.forEach { line ->
+        val stores = mutableListOf<Store>()
+        lines.forEachIndexed {index, line ->
             try {
                 // 따옴표로 묶인 필드를 올바르게 처리하는 정규식
                 val regex = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex()  // 따옴표로 묶인 필드를 올바르게 처리하는 정규식
@@ -89,12 +81,19 @@ class StoreServiceImpl(
                     kaesolYear = data[30].ifEmpty { null },
                     regDate = LocalDate.parse(data[31], DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()
                 )
+                stores.add(store)
 
-                storeRepository.save(store)
+                if ((index + 1) % 100 == 0) {
+                    storeRepository.saveAll(stores)
+                    stores.clear()
+                }
             } catch (e: Exception) {
                 println("데이터 저장 중 에러가 발생했습니다: $line")
                 e.printStackTrace()
             }
+        }
+        if (stores.isNotEmpty()) {
+            storeRepository.saveAll(stores)
         }
     }
 
@@ -197,6 +196,10 @@ class StoreServiceImpl(
         return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
     }
 
+    override fun getFilteredSimpleStoreList(rating: Int?, status: String?): List<SimpleStoreResponse> {
+        return storeRepository.findSimpleByRatingAndStatus(rating, status).map { it.toResponse() }
+    }
+
     override fun getFilteredStorePage(
         pageable: Pageable,
         cursorId: Long?,
@@ -206,8 +209,13 @@ class StoreServiceImpl(
         return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
-    override fun getFilteredSimpleStore() {
-        TODO("Not yet implemented")
+    override fun getFilteredSimpleStorePage(
+        pageable: Pageable,
+        cursorId: Long?,
+        rating: Int?,
+        status: String?
+    ): Page<SimpleStoreResponse> {
+        return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {

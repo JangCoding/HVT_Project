@@ -1,6 +1,8 @@
 package com.jansparta.hvt_project.domain.store.model
 
-data class SimpleStore(
+import com.querydsl.core.annotations.QueryProjection
+
+data class SimpleStore @QueryProjection constructor(
     val id:Long,
     var company: String, // 상호
     var shopName: String?, // 쇼핑몰명
