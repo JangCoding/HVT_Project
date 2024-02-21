@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
+import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
@@ -21,7 +22,7 @@ import java.time.format.DateTimeFormatter
 @Service
 class StoreServiceImpl(
     private val storeRepository: StoreRepository,
-    private val redisTemplate: RedisTemplate<String, String>,
+    private val redisTemplate: RedisTemplate<String, StoreResponse>,
 
 ) : StoreService {
     companion object {
@@ -177,22 +178,42 @@ class StoreServiceImpl(
             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
         }
     }
-    @Cacheable("storeCache", key = "{#id}")
+    //@Cacheable("storeCache", key = "{#id}")
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
+        val logger = LoggerFactory.getLogger(StoreServiceImpl::class.java)
+
+
         if(id == null && company == null && shopName == null && tel == null)
             throw NotFoundException()
 
+        // 레디스 템플릿에서 겹치는 키가 있는지 확인
+        val key = "storeCache::$id"
+        val cachedStore = redisTemplate.opsForValue().get(key)
+
+        if (cachedStore != null) {
+            logger.info("-------------".repeat(10))
+            logger.info("Cache hit for key: {}", key)
+            logger.info("cachedStore : {}", cachedStore)
+            logger.info("-------------".repeat(10))
+            return cachedStore
+        }
+
+        logger.info("-------------".repeat(10))
+        logger.info("Cache miss for key: {}", key)
+        logger.info("-------------".repeat(10))
         return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
     }
 
     override fun getNewStores(size: Long): List<StoreResponse> {
         val storeList = storeRepository.getNewStores(size).map{it.toResponse()}
 
+        //개선필요
         storeList.forEach{
-            redisTemplate.opsForValue().set("storeCache:${it.id}", it.toString())
+            redisTemplate.opsForValue().set("storeCache::${it.id}", it)
         }
         return storeList
     }
+
     override fun updateStore(request: UpdateStoreRequest, id:Long): StoreResponse {
         var store = storeRepository.findByIdOrNull(id)
             ?: throw NotFoundException()
