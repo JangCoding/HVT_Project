@@ -21,6 +21,12 @@ import java.io.File
 class StoreController (
     private val storeService : StoreService
 ){
+    @GetMapping("/collection-openapi")
+    fun fetchDataAndStore(): ResponseEntity<String> {
+        storeService.fetchDataAndStore()
+        return ResponseEntity.ok("데이터를 성공적으로 가져왔습니다.")
+    }
+
     @PostMapping("/collection") // 업체 리스트 csv 불러오기
     fun getStoresFromCSV(@RequestParam("file")multipartFile: MultipartFile)
     {

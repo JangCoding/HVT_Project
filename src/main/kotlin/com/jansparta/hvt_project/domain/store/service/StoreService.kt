@@ -6,10 +6,11 @@ import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
 import java.io.File
 
 interface StoreService {
+
+    fun fetchDataAndStore()
 
     fun readCsvFile()
 

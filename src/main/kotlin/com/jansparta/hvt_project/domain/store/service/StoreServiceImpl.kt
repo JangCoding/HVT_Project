@@ -1,25 +1,110 @@
 package com.jansparta.hvt_project.domain.store.service
 
 import com.jansparta.hvt_project.domain.store.dto.*
-import com.jansparta.hvt_project.domain.store.repository.StoreRepository
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.Store
+import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.w3c.dom.Element
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import javax.xml.parsers.DocumentBuilderFactory
 
 @Service
 class StoreServiceImpl(
     private val storeRepository: StoreRepository,
 
 ) : StoreService {
+    private val KEY = "6c66575174726c6136306f73446167"
+    private val baseUrl = "http://openapi.seoul.go.kr:8088/$KEY/xml/ServiceInternetShopInfo"
+    private val recordPerPage = 1000
+
+    //XML 문서의 특정 Element 에서 특정 태그의 값을 가져오는 역할
+    private fun getTagValue(element: Element, tagName: String): String? {
+        val nodeList = element.getElementsByTagName(tagName) // Element에서 주어진 태그 이름에 해당하는 모든 노드를 NodeList 형태로 가져옴
+        // 태그가 해당 Element 내에 존재하는지를 확인
+        if (nodeList.length > 0) {
+            val node = nodeList.item(0)
+            return node?.textContent
+        }
+        return null
+    }
+
+    override fun fetchDataAndStore() {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+
+        val initialDoc = builder.parse("$baseUrl/1/$recordPerPage")
+        val totalItemCount = initialDoc.getElementsByTagName("list_total_count").item(0).textContent.toInt()
+        val totalPage = (totalItemCount + recordPerPage - 1) / recordPerPage // 올림 연산
+
+        val stores = mutableListOf<Store>()
+
+        for (page in 1..totalPage) {
+            val startIndex = (page - 1) * recordPerPage + 1
+            val endIndex = page * recordPerPage
+            val url = "$baseUrl/$startIndex/$endIndex"
+            val doc = builder.parse(url)
+            val items = doc.getElementsByTagName("row")
+
+            for (i in 0 until items.length) {
+                val item = items.item(i) as Element
+
+                val store = Store(
+                    company = getTagValue(item, "COMPANY"),
+                    shopName = getTagValue(item, "SHOP_NAME"),
+                    domainName = getTagValue(item, "DOMAIN_NAME"),
+                    tel = getTagValue(item, "TEL"),
+                    email = getTagValue(item, "EMAIL"),
+                    upjongNbr = getTagValue(item, "UPJONG_NBR"),
+                    ypForm = getTagValue(item, "YPFORM"),
+                    firstHeoDate = getTagValue(item, "FIRST_HEO_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() },
+                    comAddr = getTagValue(item, "COM_ADDR"),
+                    statNm = getTagValue(item, "STAT_NM"),
+                    totRatingPoint = getTagValue(item, "TOT_RATINGPOINT")?.toIntOrNull(),
+                    chogiRatingPoint = getTagValue(item, "CHOGI_RATINGPOINT")?.toIntOrNull(),
+                    chungRatingPoint = getTagValue(item, "CHUNG_RATINGPOINT")?.toIntOrNull(),
+                    dealRatingPoint = getTagValue(item, "DEAL_RATINGPOINT")?.toIntOrNull(),
+                    pyojunRatingPoint = getTagValue(item, "PYOJUN_RATINGPOINT")?.toIntOrNull(),
+                    securityRatingPoint = getTagValue(item, "SECURITY_RATINGPOINT")?.toIntOrNull(),
+                    service = getTagValue(item, "SERVICE"),
+                    chung = getTagValue(item, "CHUNG"),
+                    chogi = getTagValue(item, "CHOGI"),
+                    gyulje = getTagValue(item, "GYULJE"),
+                    pyojun = getTagValue(item, "PYOJUN"),
+                    pInfoCare = getTagValue(item, "P_INFO_CARE"),
+                    perInfo = getTagValue(item, "PER_INFO"),
+                    dealCare = getTagValue(item, "DEAL_CARE"),
+                    sslYn = getTagValue(item, "SSL_YN"),
+                    injeung = getTagValue(item, "INJEUNG"),
+                    baesongYejeong = getTagValue(item, "BAESONG_YEJEONG"),
+                    baesong = getTagValue(item, "BAESONG"),
+                    clientBbs = getTagValue(item, "CLIENT_BBS"),
+                    leave = getTagValue(item, "LEAVE"),
+                    kaesolYear = getTagValue(item, "KAESOL_YEAR"),
+                    regDate = getTagValue(item, "REG_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
+                )
+
+                stores.add(store)
+
+                if (stores.size == 100) {
+                    storeRepository.saveAll(stores)
+                    stores.clear()
+                }
+            }
+        }
+        if (stores.isNotEmpty()) {
+            storeRepository.saveAll(stores)
+        }
+    }
+
 
     companion object {
         const val EXPECTED_FIELD_COUNT = 32 // CSV 파일의 각 줄이 가지는 필드 개수
