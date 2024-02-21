@@ -90,7 +90,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
 
         return queryFactory
             .select(
@@ -136,7 +136,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
         cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
 
         val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L

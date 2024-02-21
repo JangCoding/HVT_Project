@@ -1,6 +1,7 @@
 package com.jansparta.hvt_project.domain.store.service
 
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
+import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import org.springframework.data.domain.Page
