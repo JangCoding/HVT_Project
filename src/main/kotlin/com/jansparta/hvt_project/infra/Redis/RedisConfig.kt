@@ -1,5 +1,6 @@
 package com.jansparta.hvt_project.infra.Redis
 
+import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

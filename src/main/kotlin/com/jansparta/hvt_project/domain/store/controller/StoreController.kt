@@ -39,17 +39,6 @@ class StoreController (
     {
         return ResponseEntity.status(HttpStatus.OK).body(storeService.createStore(request))
     }
-
-    @GetMapping() // 업체 리스트 전체 조회
-    // @Cacheable("storeListCache")
-    fun <T> getStores(
-        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
-        toSimple : Boolean // Projection 적용 여부
-    ) : ResponseEntity<Page<T>>
-    {
-        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
-    }
-
     @GetMapping("/filtered")
     fun getFilteredStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
@@ -94,6 +83,16 @@ class StoreController (
             .body(storeService.getFilteredSimpleStorePage(pageable, cursorId, rating, status))
     }
 
+    @GetMapping() // 업체 리스트 전체 조회
+    // @Cacheable("storeListCache")
+    fun <T> getStores(
+        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
+        toSimple : Boolean // Projection 적용 여부
+    ) : ResponseEntity<Page<T>>
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
+    }
+
     @CacheTimer
     @GetMapping("/search") // 업체 단건 조회
     fun getStoreBy(
@@ -104,6 +103,14 @@ class StoreController (
     ) : ResponseEntity<StoreResponse>
     {
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreBy(id,company,shopName,tel))
+    }
+
+    @GetMapping("/news")
+    fun getNewStores(
+        @RequestParam(value = "Size", required = false) size : Long,
+    ) : ResponseEntity<List<StoreResponse>>
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getNewStores(size))
     }
 
 

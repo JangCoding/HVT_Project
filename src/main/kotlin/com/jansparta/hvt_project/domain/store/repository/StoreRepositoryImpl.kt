@@ -21,6 +21,13 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 
     private val store = QStore.store
 
+    override fun getNewStores(size : Long): List<Store> {
+        return queryFactory
+            .selectFrom(store)
+            .limit(size)
+            .fetch()
+    }
+
     override fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>? {
         val totalCounts = queryFactory
             .select(store.count())

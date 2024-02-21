@@ -10,6 +10,7 @@ import com.jansparta.hvt_project.domain.store.model.Store
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.File
@@ -20,9 +21,9 @@ import java.time.format.DateTimeFormatter
 @Service
 class StoreServiceImpl(
     private val storeRepository: StoreRepository,
+    private val redisTemplate: RedisTemplate<String, String>,
 
 ) : StoreService {
-
     companion object {
         const val EXPECTED_FIELD_COUNT = 32 // CSV 파일의 각 줄이 가지는 필드 개수
     }
@@ -31,7 +32,6 @@ class StoreServiceImpl(
 
         this.getStoresFromCSV(file)
     }
-
     override fun getStoresFromCSV(file: File) {
         if (!file.exists()) {
             throw FileNotFoundException("파일을 찾을 수 없습니다.")
@@ -98,7 +98,6 @@ class StoreServiceImpl(
             storeRepository.saveAll(stores)
         }
     }
-
     override fun createStore(request: CreateStoreRequest): StoreResponse {
 
         if(storeRepository.existsByCompany(request.company)){
@@ -141,7 +140,59 @@ class StoreServiceImpl(
                 regDate = request.regDate
             )).toResponse()
     }
+    override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
+        return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
+    }
 
+    override fun getFilteredSimpleStoreList(rating: Int?, status: String?): List<SimpleStoreResponse> {
+        return storeRepository.findSimpleByRatingAndStatus(rating, status).map { it.toResponse() }
+    }
+
+    override fun getFilteredStorePage(
+        pageable: Pageable,
+        cursorId: Long?,
+        rating: Int?,
+        status: String?
+    ): Page<StoreResponse> {
+        return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
+    }
+
+    override fun getFilteredSimpleStorePage(
+        pageable: Pageable,
+        cursorId: Long?,
+        rating: Int?,
+        status: String?
+    ): Page<SimpleStoreResponse> {
+        return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
+    }
+
+
+    //@Cacheable("stotCachereLis", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }")
+    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
+
+        return if(toSimple){
+            storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as Page<T>
+        }
+        else {
+            storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
+        }
+    }
+    @Cacheable("storeCache", key = "{#id}")
+    override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
+        if(id == null && company == null && shopName == null && tel == null)
+            throw NotFoundException()
+
+        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
+    }
+
+    override fun getNewStores(size: Long): List<StoreResponse> {
+        val storeList = storeRepository.getNewStores(size).map{it.toResponse()}
+
+        storeList.forEach{
+            redisTemplate.opsForValue().set("storeCache:${it.id}", it.toString())
+        }
+        return storeList
+    }
     override fun updateStore(request: UpdateStoreRequest, id:Long): StoreResponse {
         var store = storeRepository.findByIdOrNull(id)
             ?: throw NotFoundException()
@@ -183,52 +234,6 @@ class StoreServiceImpl(
 
         return storeRepository.save(store).toResponse()
     }
-
-    //@Cacheable("stotCachereLis", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }")
-    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
-
-         return if(toSimple){
-             storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as Page<T>
-         }
-        else {
-             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
-         }
-    }
-
-    override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
-        return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
-    }
-
-    override fun getFilteredSimpleStoreList(rating: Int?, status: String?): List<SimpleStoreResponse> {
-        return storeRepository.findSimpleByRatingAndStatus(rating, status).map { it.toResponse() }
-    }
-
-    override fun getFilteredStorePage(
-        pageable: Pageable,
-        cursorId: Long?,
-        rating: Int?,
-        status: String?
-    ): Page<StoreResponse> {
-        return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
-    }
-
-    override fun getFilteredSimpleStorePage(
-        pageable: Pageable,
-        cursorId: Long?,
-        rating: Int?,
-        status: String?
-    ): Page<SimpleStoreResponse> {
-        return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
-    }
-
-    @Cacheable("storeCache", key = "{#id}")
-    override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
-        if(id == null && company == null && shopName == null && tel == null)
-            throw NotFoundException()
-
-        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
-    }
-
     override fun deleteStore(id: Long) {
         val store = storeRepository.findByIdOrNull(id)
             ?:throw NotFoundException()

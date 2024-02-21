@@ -1,5 +1,6 @@
 package com.jansparta.hvt_project.infra.Redis
 
+import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
 
