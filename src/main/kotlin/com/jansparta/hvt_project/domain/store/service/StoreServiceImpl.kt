@@ -10,11 +10,9 @@ import org.springframework.data.domain.Pageable
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.infra.Redis.CustomPageImpl
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.File
@@ -183,13 +181,13 @@ class StoreServiceImpl(
     }
 
     //@Cacheable("stotCachereLis", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }")
-    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : PageImpl<T> {
+    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
 
          return if(toSimple){
-             storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as PageImpl<T>
+             storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as Page<T>
          }
         else {
-             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as PageImpl<T>
+             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
          }
     }
 

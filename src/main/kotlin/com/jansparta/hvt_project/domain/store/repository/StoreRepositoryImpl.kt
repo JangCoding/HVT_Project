@@ -4,7 +4,6 @@ import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.infra.Redis.CustomPageImpl
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
@@ -20,7 +19,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
 
     private val store = QStore.store
 
-    override fun <T> getStores(pageable: Pageable, type: Class<T>): PageImpl<T>? {
+    override fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>? {
         val totalCounts = queryFactory
             .select(store.count())
             .from(store)

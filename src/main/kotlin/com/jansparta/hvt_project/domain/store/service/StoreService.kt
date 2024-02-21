@@ -1,15 +1,10 @@
 package com.jansparta.hvt_project.domain.store.service
 
 import com.jansparta.hvt_project.domain.store.dto.CreateStoreRequest
-import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
-import com.jansparta.hvt_project.domain.store.model.Store
-import com.jansparta.hvt_project.infra.Redis.CustomPageImpl
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
 import java.io.File
 
 interface StoreService {
@@ -26,7 +21,7 @@ interface StoreService {
 
     fun getFilteredStorePage(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<StoreResponse>
 
-    fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : PageImpl<T>
+    fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
 
     fun getFilteredSimpleStore()
 
