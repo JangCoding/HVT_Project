@@ -167,7 +167,7 @@ class StoreServiceImpl(
     }
 
 
-    //@Cacheable("stotCachereLis", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }")
+    @Cacheable("PagedStoreCache", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }", cacheManager = "defaultCacheManager")
     override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
 
         return if(toSimple){

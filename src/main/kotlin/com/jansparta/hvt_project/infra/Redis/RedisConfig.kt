@@ -15,16 +15,16 @@ class RedisConfig (
     @Value("\${spring.data.redis.host}") val host: String,
     @Value("\${spring.data.redis.port}") val port: Int,
 
-){
+) {
 
     @Bean
-    fun redisConnectionFactory() : RedisConnectionFactory {
+    fun redisConnectionFactory(): RedisConnectionFactory {
         val connectionFactory = LettuceConnectionFactory(host, port)
         return connectionFactory
     }
 
     @Bean
-    fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String>{
+    fun redisTemplate(redisConnectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
         val template = RedisTemplate<String, String>()
         template.connectionFactory = redisConnectionFactory
 
