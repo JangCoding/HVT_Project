@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
@@ -21,6 +22,7 @@ import java.io.File
 class StoreController (
     private val storeService : StoreService
 ){
+    @Scheduled(cron = "0 0 12 * * ?")
     @GetMapping("/collection-openapi")
     fun fetchDataAndStore(): ResponseEntity<String> {
         storeService.fetchDataAndStore()
