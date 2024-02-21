@@ -19,11 +19,13 @@ interface StoreService {
 
     fun getFilteredStoreList(rating: Int?, status: String?) : List<StoreResponse>
 
+    fun getFilteredSimpleStoreList(rating: Int?, status: String?) : List<SimpleStoreResponse>
+
     fun getFilteredStorePage(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<StoreResponse>
 
-    fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
+    fun getFilteredSimpleStorePage(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<SimpleStoreResponse>
 
-    fun getFilteredSimpleStore()
+    fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
 
     fun getStoreBy( id : Long? , company : String? , shopName : String? , tel : String? ) : StoreResponse
 
