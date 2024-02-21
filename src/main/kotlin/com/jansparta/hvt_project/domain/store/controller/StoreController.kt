@@ -5,6 +5,7 @@ import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import com.jansparta.hvt_project.domain.store.service.StoreService
+import com.jansparta.hvt_project.infra.AOP.CacheTimer
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -93,6 +94,7 @@ class StoreController (
             .body(storeService.getFilteredSimpleStorePage(pageable, cursorId, rating, status))
     }
 
+    @CacheTimer
     @GetMapping("/search") // 업체 단건 조회
     fun getStoreBy(
         @RequestParam(value = "Id(아이디)", required = false) id : Long?,

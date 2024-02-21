@@ -1,5 +1,8 @@
 package com.jansparta.hvt_project.infra.Redis
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
@@ -27,6 +30,8 @@ class RedisCacheConfig {
 //        val objectMapper = ObjectMapper() // ObjectMapper 객체 생성. Jackson 라이브러리에서 JSON <-> Java 변환하는 데 사용됨.
 //        objectMapper.registerModule(JavaTimeModule()) //ObjectMapper에 JavaTimeModule 등록. java.time 패키지(Java 8에서 추가된 날짜와 시간 API)의 클래스들을 Jackson이 처리할 수 있도록.
 //        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL) // 역직렬화 시 클래스의 유형 정보를 기본적으로 포함하도록 ObjectMapper를 구성. Jackson에게 역직렬화할 때 필요한 클래스의 유형 정보를 전달하여 오류 방지. NON_FINAL은 객체의 최종 클래스가 아니더라도 유형 정보를 포함하도록 지정.
+//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
 
         // Redis 캐싱 구성을 생성하는 부분
         val redisCacheConfiguration =
