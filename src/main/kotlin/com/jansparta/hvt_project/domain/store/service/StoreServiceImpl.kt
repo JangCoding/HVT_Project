@@ -54,44 +54,83 @@ class StoreServiceImpl(
             val doc = builder.parse(url)
             val items = doc.getElementsByTagName("row")
 
+
             for (i in 0 until items.length) {
                 val item = items.item(i) as Element
-
-                val store = Store(
-                    company = getTagValue(item, "COMPANY"),
-                    shopName = getTagValue(item, "SHOP_NAME"),
-                    domainName = getTagValue(item, "DOMAIN_NAME"),
-                    tel = getTagValue(item, "TEL"),
-                    email = getTagValue(item, "EMAIL"),
-                    upjongNbr = getTagValue(item, "UPJONG_NBR"),
-                    ypForm = getTagValue(item, "YPFORM"),
-                    firstHeoDate = getTagValue(item, "FIRST_HEO_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() },
-                    comAddr = getTagValue(item, "COM_ADDR"),
-                    statNm = getTagValue(item, "STAT_NM"),
-                    totRatingPoint = getTagValue(item, "TOT_RATINGPOINT")?.toIntOrNull(),
-                    chogiRatingPoint = getTagValue(item, "CHOGI_RATINGPOINT")?.toIntOrNull(),
-                    chungRatingPoint = getTagValue(item, "CHUNG_RATINGPOINT")?.toIntOrNull(),
-                    dealRatingPoint = getTagValue(item, "DEAL_RATINGPOINT")?.toIntOrNull(),
-                    pyojunRatingPoint = getTagValue(item, "PYOJUN_RATINGPOINT")?.toIntOrNull(),
-                    securityRatingPoint = getTagValue(item, "SECURITY_RATINGPOINT")?.toIntOrNull(),
-                    service = getTagValue(item, "SERVICE"),
-                    chung = getTagValue(item, "CHUNG"),
-                    chogi = getTagValue(item, "CHOGI"),
-                    gyulje = getTagValue(item, "GYULJE"),
-                    pyojun = getTagValue(item, "PYOJUN"),
-                    pInfoCare = getTagValue(item, "P_INFO_CARE"),
-                    perInfo = getTagValue(item, "PER_INFO"),
-                    dealCare = getTagValue(item, "DEAL_CARE"),
-                    sslYn = getTagValue(item, "SSL_YN"),
-                    injeung = getTagValue(item, "INJEUNG"),
-                    baesongYejeong = getTagValue(item, "BAESONG_YEJEONG"),
-                    baesong = getTagValue(item, "BAESONG"),
-                    clientBbs = getTagValue(item, "CLIENT_BBS"),
-                    leave = getTagValue(item, "LEAVE"),
-                    kaesolYear = getTagValue(item, "KAESOL_YEAR"),
-                    regDate = getTagValue(item, "REG_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
-                )
-
+                val company = getTagValue(item, "COMPANY")
+                val shopName = getTagValue(item, "SHOP_NAME")
+                val domainName = getTagValue(item, "DOMAIN_NAME")
+                val existingStore = company?.let { comp ->
+                    shopName?.let { shop ->
+                        domainName?.let { domain ->
+                            storeRepository.findTopByCompanyAndShopNameAndDomainName(comp, shop, domain)
+                        }
+                    }
+                }
+                val store = existingStore?.apply {
+                        tel = getTagValue(item, "TEL")
+                        email = getTagValue(item, "EMAIL")
+                        upjongNbr = getTagValue(item, "UPJONG_NBR")
+                        ypForm = getTagValue(item, "YPFORM")
+                        firstHeoDate = getTagValue(item, "FIRST_HEO_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
+                        comAddr = getTagValue(item, "COM_ADDR")
+                        statNm = getTagValue(item, "STAT_NM")
+                        totRatingPoint = getTagValue(item, "TOT_RATINGPOINT")?.toIntOrNull()
+                        chogiRatingPoint = getTagValue(item, "CHOGI_RATINGPOINT")?.toIntOrNull()
+                        chungRatingPoint = getTagValue(item, "CHUNG_RATINGPOINT")?.toIntOrNull()
+                        dealRatingPoint = getTagValue(item, "DEAL_RATINGPOINT")?.toIntOrNull()
+                        pyojunRatingPoint = getTagValue(item, "PYOJUN_RATINGPOINT")?.toIntOrNull()
+                        securityRatingPoint = getTagValue(item, "SECURITY_RATINGPOINT")?.toIntOrNull()
+                        service = getTagValue(item, "SERVICE")
+                        chung = getTagValue(item, "CHUNG")
+                        chogi = getTagValue(item, "CHOGI")
+                        gyulje = getTagValue(item, "GYULJE")
+                        pyojun = getTagValue(item, "PYOJUN")
+                        pInfoCare = getTagValue(item, "P_INFO_CARE")
+                        perInfo = getTagValue(item, "PER_INFO")
+                        dealCare = getTagValue(item, "DEAL_CARE")
+                        sslYn = getTagValue(item, "SSL_YN")
+                        injeung = getTagValue(item, "INJEUNG")
+                        baesongYejeong = getTagValue(item, "BAESONG_YEJEONG")
+                        baesong = getTagValue(item, "BAESONG")
+                        clientBbs = getTagValue(item, "CLIENT_BBS")
+                        leave = getTagValue(item, "LEAVE")
+                        kaesolYear = getTagValue(item, "KAESOL_YEAR")
+                        regDate = getTagValue(item, "REG_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
+                    } ?: Store(
+                        company = company,
+                        shopName = shopName,
+                        domainName = domainName,
+                        tel = getTagValue(item, "TEL"),
+                        email = getTagValue(item, "EMAIL"),
+                        upjongNbr = getTagValue(item, "UPJONG_NBR"),
+                        ypForm = getTagValue(item, "YPFORM"),
+                        firstHeoDate = getTagValue(item, "FIRST_HEO_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() },
+                        comAddr = getTagValue(item, "COM_ADDR"),
+                        statNm = getTagValue(item, "STAT_NM"),
+                        totRatingPoint = getTagValue(item, "TOT_RATINGPOINT")?.toIntOrNull(),
+                        chogiRatingPoint = getTagValue(item, "CHOGI_RATINGPOINT")?.toIntOrNull(),
+                        chungRatingPoint = getTagValue(item, "CHUNG_RATINGPOINT")?.toIntOrNull(),
+                        dealRatingPoint = getTagValue(item, "DEAL_RATINGPOINT")?.toIntOrNull(),
+                        pyojunRatingPoint = getTagValue(item, "PYOJUN_RATINGPOINT")?.toIntOrNull(),
+                        securityRatingPoint = getTagValue(item, "SECURITY_RATINGPOINT")?.toIntOrNull(),
+                        service = getTagValue(item, "SERVICE"),
+                        chung = getTagValue(item, "CHUNG"),
+                        chogi = getTagValue(item, "CHOGI"),
+                        gyulje = getTagValue(item, "GYULJE"),
+                        pyojun = getTagValue(item, "PYOJUN"),
+                        pInfoCare = getTagValue(item, "P_INFO_CARE"),
+                        perInfo = getTagValue(item, "PER_INFO"),
+                        dealCare = getTagValue(item, "DEAL_CARE"),
+                        sslYn = getTagValue(item, "SSL_YN"),
+                        injeung = getTagValue(item, "INJEUNG"),
+                        baesongYejeong = getTagValue(item, "BAESONG_YEJEONG"),
+                        baesong = getTagValue(item, "BAESONG"),
+                        clientBbs = getTagValue(item, "CLIENT_BBS"),
+                        leave = getTagValue(item, "LEAVE"),
+                        kaesolYear = getTagValue(item, "KAESOL_YEAR"),
+                        regDate = getTagValue(item, "REG_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
+                    )
                 stores.add(store)
 
                 if (stores.size == 100) {
