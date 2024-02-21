@@ -24,6 +24,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
     override fun getNewStores(size : Long): List<Store> {
         return queryFactory
             .selectFrom(store)
+            .orderBy(store.id.desc())
             .limit(size)
             .fetch()
     }
