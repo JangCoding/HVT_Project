@@ -119,3 +119,7 @@ CSV 파일을 읽어 데이터를 DB에 저장하는 기능은 다수의 데이�
 
 ## ERD
 ![image](https://github.com/JangCoding/HVT_Project/assets/62090021/3868ecbd-d4ee-4855-a1eb-5c38335408b3)
+
+## REST API
+![image](https://github.com/JangCoding/HVT_Project/assets/62090021/ad40d0d8-d1e7-4f24-8419-01f448cf14fa)
+
