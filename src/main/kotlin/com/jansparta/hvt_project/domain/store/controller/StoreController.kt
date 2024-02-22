@@ -5,8 +5,7 @@ import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.dto.StoreResponse
 import com.jansparta.hvt_project.domain.store.dto.UpdateStoreRequest
 import com.jansparta.hvt_project.domain.store.service.StoreService
-import org.springframework.data.crossstore.ChangeSetPersister
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import com.jansparta.hvt_project.infra.AOP.CacheTimer
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -56,15 +55,6 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.createStore(request))
     }
 
-    @GetMapping() // 업체 리스트 전체 조회
-    fun <T> getStores(
-        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
-        toSimple : Boolean // Projection 적용 여부
-    ) : ResponseEntity<Page<T>>
-    {
-        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
-    }
-
     @GetMapping("/filtered")
     fun getFilteredStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
@@ -97,6 +87,7 @@ class StoreController (
             .body(storeService.getFilteredStorePage(pageable, cursorId, rating, status))
     }
 
+
     @GetMapping("/pagenated/simple")
     fun getFilteredSimpleStorePage(
         @PageableDefault(size = 10) pageable: Pageable,
@@ -109,6 +100,18 @@ class StoreController (
             .body(storeService.getFilteredSimpleStorePage(pageable, cursorId, rating, status))
     }
 
+    @CacheTimer
+    @GetMapping() // 업체 리스트 전체 조회
+    // @Cacheable("storeListCache")
+    fun <T> getStores(
+        @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
+        toSimple : Boolean // Projection 적용 여부
+    ) : ResponseEntity<Page<T>>
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreList(pageable, toSimple))
+    }
+
+    @CacheTimer
     @GetMapping("/search") // 업체 단건 조회
     fun getStoreBy(
         @RequestParam(value = "Id(아이디)", required = false) id : Long?,
@@ -120,7 +123,14 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreBy(id,company,shopName,tel))
     }
 
-
+    @CacheTimer
+    @GetMapping("/news")
+    fun getNewStores(
+        @RequestParam(value = "Size", required = false) size : Long,
+    ) : ResponseEntity<List<StoreResponse>>
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getNewStores(size))
+    }
     @PutMapping("/update/{id}") // 업체 수정
     fun updateStore(
         @RequestBody request : UpdateStoreRequest,
@@ -135,7 +145,8 @@ class StoreController (
         @PathVariable id:Long
     ) : ResponseEntity<Unit>
     {
-        TODO()
+        storeService.deleteStore(id)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
 }

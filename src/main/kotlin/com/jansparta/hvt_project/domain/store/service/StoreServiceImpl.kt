@@ -2,12 +2,18 @@ package com.jansparta.hvt_project.domain.store.service
 
 import com.jansparta.hvt_project.domain.store.dto.*
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
+import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.w3c.dom.Element
@@ -20,6 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Service
 class StoreServiceImpl(
     private val storeRepository: StoreRepository,
+    private val redisTemplate: RedisTemplate<String, StoreResponse>,
 
 ) : StoreService {
     private val KEY = "6c66575174726c6136306f73446167" // OpenAPI 인증키
@@ -204,7 +211,7 @@ class StoreServiceImpl(
                     ypForm = data[6].ifEmpty { null },
                     firstHeoDate = LocalDate.parse(data[7], DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString(),
                     comAddr = data[8].ifEmpty { null },
-                    statNm = data[9].ifEmpty { null },
+                    statNm = StatNmStatus.fromString(data[9]),
                     totRatingPoint = data[10].toIntOrNull(),
                     chogiRatingPoint = data[11].toIntOrNull(),
                     chungRatingPoint = data[12].toIntOrNull(),
@@ -245,7 +252,6 @@ class StoreServiceImpl(
             storeRepository.saveAll(stores)
         }
     }
-
     override fun createStore(request: CreateStoreRequest): StoreResponse {
 
         if(storeRepository.existsByCompany(request.company)){
@@ -263,7 +269,7 @@ class StoreServiceImpl(
                 ypForm = request.ypForm,
                 firstHeoDate = request.firstHeoDate,
                 comAddr = request.comAddr,
-                statNm = request.statNm,
+                statNm = StatNmStatus.fromString(request.statNm),
                 totRatingPoint = request.totRatingPoint,
                 chogiRatingPoint = request.chogiRatingPoint,
                 chungRatingPoint = request.chungRatingPoint,
@@ -288,59 +294,6 @@ class StoreServiceImpl(
                 regDate = request.regDate
             )).toResponse()
     }
-
-    override fun updateStore(request: UpdateStoreRequest, id:Long): StoreResponse {
-        var store = storeRepository.findByIdOrNull(id)
-            ?: throw NotFoundException()
-
-        store.apply {
-            company = request.company
-            shopName = request.shopName
-            domainName = request.domainName
-            tel = request.tel
-            email = request.email
-            upjongNbr = request.upjongNbr
-            ypForm = request.ypForm
-            firstHeoDate = request.firstHeoDate
-            comAddr = request.comAddr
-            statNm = request.statNm
-            totRatingPoint = request.totRatingPoint
-            chogiRatingPoint = request.chogiRatingPoint
-            chungRatingPoint = request.chungRatingPoint
-            dealRatingPoint = request.dealRatingPoint
-            pyojunRatingPoint = request.pyojunRatingPoint
-            securityRatingPoint = request.securityRatingPoint
-            service = request.service
-            chung = request.chung
-            chogi = request.chogi
-            gyulje = request.gyulje
-            pyojun = request.pyojun
-            pInfoCare = request.pInfoCare
-            perInfo = request.perInfo
-            dealCare = request.dealCare
-            sslYn = request.sslYn
-            injeung = request.injeung
-            baesongYejeong = request.baesongYejeong
-            baesong = request.baesong
-            clientBbs = request.clientBbs
-            leave = request.leave
-            kaesolYear = request.kaesolYear
-            regDate = request.regDate
-        }
-
-        return storeRepository.save(store).toResponse()
-    }
-
-    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
-
-         return if(toSimple){
-             storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as Page<T>
-         }
-        else {
-             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
-         }
-    }
-
     override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
         return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
     }
@@ -367,10 +320,105 @@ class StoreServiceImpl(
         return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
+
+    @Cacheable("PagedStoreCache", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }", cacheManager = "defaultCacheManager")
+    override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
+
+        return if(toSimple){
+            storeRepository.getStores(pageable, SimpleStore::class.java)?.map{it.toResponse()} as Page<T>
+        }
+        else {
+            storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
+        }
+    }
+    //@Cacheable("storeCache", key = "{#id}")
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
+        val logger = LoggerFactory.getLogger(StoreServiceImpl::class.java)
+
+
         if(id == null && company == null && shopName == null && tel == null)
             throw NotFoundException()
 
-        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
+        // 레디스 템플릿에서 겹치는 키가 있는지 확인
+        val key = "storeCache::$id:$company:$shopName:$tel"
+
+        val cachedStore = redisTemplate.opsForValue().get(key)
+
+        if (cachedStore != null) {
+            logger.info("-------------".repeat(10))
+            logger.info("Cache hit for key: {}", key)
+            logger.info("cachedStore : {}", cachedStore)
+            logger.info("-------------".repeat(10))
+            return cachedStore
+        }
+
+        logger.info("-------------".repeat(10))
+        logger.info("Cache miss for key: {}", key)
+        logger.info("-------------".repeat(10))
+        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse().also { it ->
+            redisTemplate.opsForValue().set("storeCache::${it.id}:${it.company}:${it.shopName}:${it.tel}", it)
+        }
+
+    }
+
+    override fun getNewStores(size: Long): List<StoreResponse> {
+        val storeList = storeRepository.getNewStores(size).map{it.toResponse()}
+
+        //개선필요
+        storeList.forEach{
+            redisTemplate.opsForValue().set("storeCache::${it.id}:${it.company}:${it.shopName}:${it.tel}", it)
+        }
+        return storeList
+    }
+
+    override fun updateStore(request: UpdateStoreRequest, id:Long): StoreResponse {
+        var store = storeRepository.findByIdOrNull(id)
+            ?: throw NotFoundException()
+
+        store.apply {
+            company = request.company
+            shopName = request.shopName
+            domainName = request.domainName
+            tel = request.tel
+            email = request.email
+            upjongNbr = request.upjongNbr
+            ypForm = request.ypForm
+            firstHeoDate = request.firstHeoDate
+            comAddr = request.comAddr
+            statNm = StatNmStatus.fromString(request.statNm)
+            totRatingPoint = request.totRatingPoint
+            chogiRatingPoint = request.chogiRatingPoint
+            chungRatingPoint = request.chungRatingPoint
+            dealRatingPoint = request.dealRatingPoint
+            pyojunRatingPoint = request.pyojunRatingPoint
+            securityRatingPoint = request.securityRatingPoint
+            service = request.service
+            chung = request.chung
+            chogi = request.chogi
+            gyulje = request.gyulje
+            pyojun = request.pyojun
+            pInfoCare = request.pInfoCare
+            perInfo = request.perInfo
+            dealCare = request.dealCare
+            sslYn = request.sslYn
+            injeung = request.injeung
+            baesongYejeong = request.baesongYejeong
+            baesong = request.baesong
+            clientBbs = request.clientBbs
+            leave = request.leave
+            kaesolYear = request.kaesolYear
+            regDate = request.regDate
+        }
+
+        return storeRepository.save(store).toResponse()
+    }
+    override fun deleteStore(id: Long) {
+        val store = storeRepository.findByIdOrNull(id)
+            ?:throw NotFoundException()
+
+        store.isDeleted = false
+
+        storeRepository.delete(store)
+
     }
 }
