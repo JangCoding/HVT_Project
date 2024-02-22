@@ -58,9 +58,7 @@
   - 하지만 이후 DB 의 id 값을 기준으로 최근 저장된 n 건의 데이터를 캐시에 등록하는 과정에서 문제가 있었습니다.
   - @Cacheable 로는 반환값만을 등록할 수 있기 때문에 n건의 데이터가 List째로 저장되기 때문이었습니다.
   - redisTemplate 를 활용하여 opsForValue() 로 최신데이터들을 각각  “storeCache::$id” 로 저장하여 단건조회 시 활용할 수 있도록 하였습니다.
-  - cache 에 저장된 데이터를 역직렬화 하는 과정에선 Jackson 에서 LocalDateTime 을 제대로 변환할 수 없는 문제점이 있어
-
-  -     - ElasticSearch 등의 검색 엔진 통한 검색 기능 구현
+  - ElasticSearch 등의 검색 엔진 통한 검색 기능 구현
   - 캐시 데이터 동기화 문제
     
 
