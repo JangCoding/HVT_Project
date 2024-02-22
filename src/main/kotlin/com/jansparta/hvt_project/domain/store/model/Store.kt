@@ -1,10 +1,17 @@
 package com.jansparta.hvt_project.domain.store.model
 
+import com.jansparta.hvt_project.infra.BaseEntity
 import jakarta.persistence.*
-import java.time.LocalDate
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.Where
 
 @Entity
 @Table(name = "stores")
+@SQLDelete(sql = "UPDATE stores SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false OR is_deleted IS NULL")
+
 class Store(
     @Column(name = "COMPANY") // 상호
     var company: String?,
@@ -24,8 +31,11 @@ class Store(
     var firstHeoDate: String?,
     @Column(name = "COM_ADDR") // 회사주소
     var comAddr: String?,
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "STAT_NM") // 업소상태
-    var statNm: String?,
+    var statNm: StatNmStatus,
+
     @Column(name = "TOT_RATINGPOINT") // 전체평가
     var totRatingPoint: Int?,
     @Column(name = "CHOGI_RATINGPOINT") // 사업자정보표시평가
@@ -69,8 +79,9 @@ class Store(
     @Column(name = "KAESOL_YEAR") // 사이트개설년도
     var kaesolYear: String?,
     @Column(name = "REG_DATE") // 모니터링날짜
-    var regDate: String?
-){
+    var regDate: String?,
+
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

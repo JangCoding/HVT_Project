@@ -4,6 +4,7 @@ import com.jansparta.hvt_project.domain.store.dto.SimpleStoreResponse
 import com.jansparta.hvt_project.domain.store.model.QSimpleStore
 import com.jansparta.hvt_project.domain.store.model.QStore
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
+import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 import com.jansparta.hvt_project.infra.querydsl.QueryDslSupport
 import com.querydsl.core.BooleanBuilder
@@ -19,6 +20,14 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
     //QueryDSL 구현부
 
     private val store = QStore.store
+
+    override fun getNewStores(size : Long): List<Store> {
+        return queryFactory
+            .selectFrom(store)
+            .orderBy(store.id.desc())
+            .limit(size)
+            .fetch()
+    }
 
     override fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>? {
         val totalCounts = queryFactory
@@ -64,6 +73,8 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         shopName?.let { whereClause.and(store.shopName.eq(shopName)) }
         tel?.let { whereClause.and(store.tel.eq(tel)) }
 
+
+
         return queryFactory
             .selectFrom(store)
             .where(whereClause)
@@ -74,7 +85,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
 
         return queryFactory.selectFrom(store)
             .where(whereClause)
@@ -87,7 +98,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
 
         return queryFactory
             .select(
@@ -115,7 +126,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
         cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
 
         val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L
@@ -133,7 +144,7 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         val whereClause = BooleanBuilder()
 
         rating?.let { whereClause.and(store.totRatingPoint.eq(it)) }
-        status?.let { whereClause.and(store.statNm.eq(it)) }
+        status?.let { whereClause.and(store.statNm.eq(StatNmStatus.fromString(it))) }
         cursorId?.let { whereClause.and(store.id.lt(it)) } // desc
 
         val totalCount = queryFactory.select(store.count()).from(store).where(whereClause).fetchOne() ?: 0L
