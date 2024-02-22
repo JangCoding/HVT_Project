@@ -85,9 +85,7 @@ class StoreController (
             .body(storeService.getFilteredSimpleStorePage(pageable, cursorId, rating, status))
     }
 
-    @CacheTimer
     @GetMapping() // 업체 리스트 전체 조회
-    // @Cacheable("storeListCache")
     fun <T> getStores(
         @PageableDefault( size = 10, sort = ["id"]) pageable: Pageable,
         toSimple : Boolean // Projection 적용 여부
@@ -97,15 +95,23 @@ class StoreController (
     }
 
     @CacheTimer
-    @GetMapping("/search") // 업체 단건 조회
-    fun getStoreBy(
+    @GetMapping("/{id}") // 업체 단건 조회
+    fun getStoreById(
+        @PathVariable id : Long,
+    ) : ResponseEntity<StoreResponse>
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreById(id))
+    }
+    @CacheTimer
+    @GetMapping("/search") // 업체 검색. 전문 검색 엔진 필요 (ElasticSearch 등)
+    fun searchStoresBy(
         @RequestParam(value = "Id(아이디)", required = false) id : Long?,
         @RequestParam(value = "Company(상호명)", required = false) company : String?,
         @RequestParam(value = "shopName(쇼핑몰명)", required = false) shopName : String?,
         @RequestParam(value = "tel(전화번호)", required = false) tel : String?,
-    ) : ResponseEntity<StoreResponse>
+    ) : ResponseEntity<List<StoreResponse>>
     {
-        return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreBy(id,company,shopName,tel))
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.searchStoresBy(id,company,shopName,tel))
     }
 
     @CacheTimer

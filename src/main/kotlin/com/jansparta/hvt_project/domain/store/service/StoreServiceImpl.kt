@@ -8,7 +8,6 @@ import com.jansparta.hvt_project.domain.store.model.SimpleStore
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 import org.slf4j.LoggerFactory
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.redis.core.RedisTemplate
@@ -27,6 +26,7 @@ class StoreServiceImpl(
 ) : StoreService {
     companion object {
         const val EXPECTED_FIELD_COUNT = 32 // CSV 파일의 각 줄이 가지는 필드 개수
+        val logger = LoggerFactory.getLogger(StoreServiceImpl::class.java)
     }
     override fun readCsvFile() {
         val file = File("C:\\csv\\file.csv")
@@ -168,7 +168,7 @@ class StoreServiceImpl(
     }
 
 
-    @Cacheable("PagedStoreCache", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }", cacheManager = "defaultCacheManager")
+    //@Cacheable("PagedStoreCache", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }", cacheManager = "defaultCacheManager")
     override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
 
         return if(toSimple){
@@ -178,33 +178,26 @@ class StoreServiceImpl(
             storeRepository.getStores(pageable, Store::class.java)?.map{it.toResponse()} as Page<T>
         }
     }
+
+
+    override fun getStoreById( id : Long) : StoreResponse
+    {
+       return getFromCache(id)
+    }
+
+
     //@Cacheable("storeCache", key = "{#id}")
-    override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
-        val logger = LoggerFactory.getLogger(StoreServiceImpl::class.java)
+    override fun searchStoresBy(id: Long?, company: String?, shopName: String?, tel: String?): List<StoreResponse> {
 
+        // id 값이 있으면 캐시 통한 단건조회
+        if(id != null)
+            return listOf(getFromCache(id))
 
-        if(id == null && company == null && shopName == null && tel == null)
-            throw NotFoundException()
+        // 없으면 일반 검색 조회
+        else if(company == null && shopName == null && tel == null)
+            throw IllegalArgumentException("must input at least one")
 
-        // 레디스 템플릿에서 겹치는 키가 있는지 확인
-        val key = "storeCache::$id:$company:$shopName:$tel"
-
-        val cachedStore = redisTemplate.opsForValue().get(key)
-
-        if (cachedStore != null) {
-            logger.info("-------------".repeat(10))
-            logger.info("Cache hit for key: {}", key)
-            logger.info("cachedStore : {}", cachedStore)
-            logger.info("-------------".repeat(10))
-            return cachedStore
-        }
-
-        logger.info("-------------".repeat(10))
-        logger.info("Cache miss for key: {}", key)
-        logger.info("-------------".repeat(10))
-        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse().also { it ->
-            redisTemplate.opsForValue().set("storeCache::${it.id}:${it.company}:${it.shopName}:${it.tel}", it)
-        }
+        return storeRepository.searchStoresBy(company, shopName, tel).map{it.toResponse()}
 
     }
 
@@ -213,7 +206,7 @@ class StoreServiceImpl(
 
         //개선필요
         storeList.forEach{
-            redisTemplate.opsForValue().set("storeCache::${it.id}:${it.company}:${it.shopName}:${it.tel}", it)
+            redisTemplate.opsForValue().set("storeCache::${it.id}", it)
         }
         return storeList
     }
@@ -267,5 +260,28 @@ class StoreServiceImpl(
 
         storeRepository.delete(store)
 
+    }
+
+
+    fun getFromCache(id : Long) : StoreResponse{
+        var key = "storeCache::$id"
+
+        val cachedStore = redisTemplate.opsForValue().get(key)
+
+        // 레디스 템플릿에서 겹치는 키가 있는지 확인
+        if (cachedStore != null) {
+            logger.info("-------------".repeat(10))
+            logger.info("Cache hit for key: {}", key)
+            logger.info("cachedStore : {}", cachedStore)
+            logger.info("-------------".repeat(10))
+            return cachedStore
+        }
+        // 레디스 템플릿에서 겹치지 않을 시 새로 등록
+        logger.info("-------------".repeat(10))
+        logger.info("Cache miss for key: {}", key)
+        logger.info("-------------".repeat(10))
+        return storeRepository.getStoreBy(id).toResponse().also { it ->
+            redisTemplate.opsForValue().set(key, it, 1L)
+        }
     }
 }

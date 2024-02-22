@@ -17,7 +17,9 @@ interface StoreService {
     fun getFilteredStorePage(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<StoreResponse>
     fun getFilteredSimpleStorePage(pageable: Pageable, cursorId: Long?, rating: Int?, status: String?): Page<SimpleStoreResponse>
     fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T>
-    fun getStoreBy( id : Long? , company : String? , shopName : String? , tel : String? ) : StoreResponse
+
+    fun getStoreById( id : Long) : StoreResponse
+    fun searchStoresBy( id : Long? , company : String? , shopName : String? , tel : String? ) : List<StoreResponse>
     fun getNewStores( size : Long ) : List<StoreResponse>
     fun updateStore( request : UpdateStoreRequest , id : Long) : StoreResponse
     fun deleteStore( id:Long )
