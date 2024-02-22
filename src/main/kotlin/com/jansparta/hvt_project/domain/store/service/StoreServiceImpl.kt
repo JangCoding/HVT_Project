@@ -187,7 +187,8 @@ class StoreServiceImpl(
             throw NotFoundException()
 
         // 레디스 템플릿에서 겹치는 키가 있는지 확인
-        val key = "storeCache::$id"
+        val key = "storeCache::$id:$company:$shopName:$tel"
+
         val cachedStore = redisTemplate.opsForValue().get(key)
 
         if (cachedStore != null) {
@@ -201,7 +202,10 @@ class StoreServiceImpl(
         logger.info("-------------".repeat(10))
         logger.info("Cache miss for key: {}", key)
         logger.info("-------------".repeat(10))
-        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse()
+        return storeRepository.getStoreBy(id, company, shopName, tel).toResponse().also { it ->
+            redisTemplate.opsForValue().set("storeCache::${it.id}:${it.company}:${it.shopName}:${it.tel}", it)
+        }
+
     }
 
     override fun getNewStores(size: Long): List<StoreResponse> {
@@ -209,7 +213,7 @@ class StoreServiceImpl(
 
         //개선필요
         storeList.forEach{
-            redisTemplate.opsForValue().set("storeCache::${it.id}", it)
+            redisTemplate.opsForValue().set("storeCache::${it.id}:${it.company}:${it.shopName}:${it.tel}", it)
         }
         return storeList
     }

@@ -39,6 +39,7 @@ class StoreController (
     {
         return ResponseEntity.status(HttpStatus.OK).body(storeService.createStore(request))
     }
+
     @GetMapping("/filtered")
     fun getFilteredStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
@@ -71,6 +72,7 @@ class StoreController (
             .body(storeService.getFilteredStorePage(pageable, cursorId, rating, status))
     }
 
+
     @GetMapping("/pagenated/simple")
     fun getFilteredSimpleStorePage(
         @PageableDefault(size = 10) pageable: Pageable,
@@ -83,6 +85,7 @@ class StoreController (
             .body(storeService.getFilteredSimpleStorePage(pageable, cursorId, rating, status))
     }
 
+    @CacheTimer
     @GetMapping() // 업체 리스트 전체 조회
     // @Cacheable("storeListCache")
     fun <T> getStores(
@@ -105,6 +108,7 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getStoreBy(id,company,shopName,tel))
     }
 
+    @CacheTimer
     @GetMapping("/news")
     fun getNewStores(
         @RequestParam(value = "Size", required = false) size : Long,
@@ -112,8 +116,6 @@ class StoreController (
     {
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getNewStores(size))
     }
-
-
     @PutMapping("/update/{id}") // 업체 수정
     fun updateStore(
         @RequestBody request : UpdateStoreRequest,
