@@ -30,8 +30,8 @@ class SwaggerConfig {
             )
             .info(
                 Info()
-                    .title("backoffice API")
-                    .description("backoffice API schema")
+                    .title("HVT Project API")
+                    .description("HVT Project API schema")
                     .version("1.0.0")
             )
     }
