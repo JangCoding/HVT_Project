@@ -40,7 +40,7 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.createStore(request))
     }
 
-    @GetMapping("/filtered")
+    @GetMapping("/filtered") // 필터 적용 리스트 조회
     fun getFilteredStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
         @RequestParam(value = "status", required = false) status:String?
@@ -50,7 +50,7 @@ class StoreController (
             .body(storeService.getFilteredStoreList(rating, status))
     }
 
-    @GetMapping("/filtered/simple")
+    @GetMapping("/filtered/simple") // 필터 적용 리스트 Projection 조회
     fun getFilteredSimpleStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
         @RequestParam(value = "status", required = false) status:String?
@@ -60,7 +60,7 @@ class StoreController (
             .body(storeService.getFilteredSimpleStoreList(rating, status))
     }
 
-    @GetMapping("/pagenated")
+    @GetMapping("/pagenated") // 필터 적용 페이지 조회
     fun getFilteredStorePage(
         @PageableDefault(size = 10) pageable: Pageable,
         @RequestParam(value = "cursorId", required = false) cursorId: Long?,
@@ -72,8 +72,7 @@ class StoreController (
             .body(storeService.getFilteredStorePage(pageable, cursorId, rating, status))
     }
 
-
-    @GetMapping("/pagenated/simple")
+    @GetMapping("/pagenated/simple") // 필터 적용 페이지 Projection 조회
     fun getFilteredSimpleStorePage(
         @PageableDefault(size = 10) pageable: Pageable,
         @RequestParam(value = "cursorId", required = false) cursorId: Long?,
