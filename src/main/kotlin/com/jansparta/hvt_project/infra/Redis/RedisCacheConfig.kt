@@ -25,21 +25,21 @@ import java.time.Duration
 class RedisCacheConfig {
 
     // jackson LocalDateTime mapper
-    @Bean
-    fun objectMapper(): ObjectMapper {
-        val mapper = ObjectMapper()
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) // timestamp 형식 안따르도록 설정
-//        mapper.registerModules(JavaTimeModule(), Jdk8Module()) // LocalDateTime 매핑을 위해 모듈 활성화
-        mapper.registerModule(ParameterNamesModule());
-        return mapper
-    }
+//    @Bean
+//    fun objectMapper(): ObjectMapper {
+//        val mapper = ObjectMapper()
+//        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) // timestamp 형식 안따르도록 설정
+////        mapper.registerModules(JavaTimeModule(), Jdk8Module()) // LocalDateTime 매핑을 위해 모듈 활성화
+//        mapper.registerModule(ParameterNamesModule());
+//        return mapper
+//    }
 
     @Bean
     fun defaultCacheManager(connectionFactory: RedisConnectionFactory): CacheManager {
         val objectMapper = ObjectMapper().registerModules(kotlinModule()).activateDefaultTyping(
             BasicPolymorphicTypeValidator.builder().allowIfBaseType(Any::class.java).build(),
             ObjectMapper.DefaultTyping.EVERYTHING
-        ).registerModules(JavaTimeModule(), Jdk8Module())
+        ).registerModules(JavaTimeModule(), Jdk8Module()) // LocalDateTime 모듈 적용
 
 
         val redisCacheConfiguration: RedisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
