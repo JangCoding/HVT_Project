@@ -445,7 +445,7 @@ class StoreServiceImpl(
         logger.info("Cache miss for key: {}", key)
         logger.info("-------------".repeat(10))
         return storeRepository.getStoreBy(id).toResponse().also { it ->
-            redisTemplate.opsForValue().set(key, it, 1L)
+            redisTemplate.opsForValue().set(key, it)
         }
     }
 }
