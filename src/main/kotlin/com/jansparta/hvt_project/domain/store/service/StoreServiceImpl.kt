@@ -5,6 +5,7 @@ import com.jansparta.hvt_project.domain.store.repository.StoreRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import com.jansparta.hvt_project.domain.store.model.SimpleStore
+import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
@@ -193,10 +194,12 @@ class StoreServiceImpl(
     }
 
     override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
     }
 
     override fun getFilteredSimpleStoreList(rating: Int?, status: String?): List<SimpleStoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findSimpleByRatingAndStatus(rating, status).map { it.toResponse() }
     }
 
@@ -206,6 +209,7 @@ class StoreServiceImpl(
         rating: Int?,
         status: String?
     ): Page<StoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
@@ -215,6 +219,7 @@ class StoreServiceImpl(
         rating: Int?,
         status: String?
     ): Page<SimpleStoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
@@ -222,6 +227,10 @@ class StoreServiceImpl(
         rating?.let {
             if(it !in 0..3 ) throw IllegalArgumentException("전체평가는 0~3 사이의 값을 입력해야 합니다")
         }
+        //enum 변경되면 적용
+//        status?.let {
+//            if(it !in StatNmStatus.values()) throw IllegalArgumentException("업소상태에 대해 유효하지 않은 입력값입니다")
+//        }
     }
 
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
