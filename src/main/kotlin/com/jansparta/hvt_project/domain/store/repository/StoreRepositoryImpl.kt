@@ -65,20 +65,28 @@ class StoreRepositoryImpl : CustomStoreRepository, QueryDslSupport() {
         return PageImpl(contents, pageable, totalCounts)
     }
 
-    override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): Store {
+    override fun getStoreBy(id: Long): Store {
 
         var whereClause = BooleanBuilder()
-        id?.let { whereClause.and(store.id.eq(id)) }
-        company?.let { whereClause.and(store.company.eq(company)) }
-        shopName?.let { whereClause.and(store.shopName.eq(shopName)) }
-        tel?.let { whereClause.and(store.tel.eq(tel)) }
-
-
+        whereClause.and(store.id.eq(id))
 
         return queryFactory
             .selectFrom(store)
             .where(whereClause)
-            .fetchOne() ?: throw NotFoundException()
+            .limit(1)
+            .fetchOne()?: throw NotFoundException()
+    }
+    override fun searchStoresBy(company: String?, shopName: String?, tel: String?): List<Store> {
+
+        val whereClause = BooleanBuilder()
+        company?.let { whereClause.and(store.company.eq(company)) }
+        shopName?.let { whereClause.and(store.shopName.like("%$shopName%")) } // 응답시간 초과. 전문검색엔진 필요
+        tel?.let { whereClause.and(store.tel.like("%$tel%")) }
+
+        return queryFactory
+            .selectFrom(store)
+            .where(whereClause)
+            .fetch() ?: emptyList()
     }
 
     override fun findByRatingAndStatus(rating: Int?, status: String?): List<Store> {
