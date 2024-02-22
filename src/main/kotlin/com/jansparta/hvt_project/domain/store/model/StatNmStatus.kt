@@ -1,5 +1,7 @@
 package com.jansparta.hvt_project.domain.store.model
 
+import com.jansparta.hvt_project.domain.exception.InvalidArgumentException
+
 enum class StatNmStatus  {
     사이트운영중단 ,
     휴업중 ,
@@ -20,7 +22,7 @@ enum class StatNmStatus  {
                 "사이트폐쇄" -> 사이트폐쇄
                 "영업중" -> 영업중
                 "확인안됨" -> 확인안됨
-                else -> throw IllegalArgumentException("StatNmStatus Error")
+                else -> throw InvalidArgumentException("StatNmStatus Error")
             }
         }
     }
