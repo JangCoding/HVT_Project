@@ -1,10 +1,13 @@
 package com.jansparta.hvt_project.domain.member.model
 
+import com.jansparta.hvt_project.domain.member.dto.MemberResponse
 import com.jansparta.hvt_project.domain.member.dto.SignupResponse
 import com.jansparta.hvt_project.domain.member.repository.MemberRole
 import jakarta.persistence.*
 import org.hibernate.annotations.GenericGenerator
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Entity
@@ -43,5 +46,19 @@ fun Member.toSignupResponse(): SignupResponse {
         email = email,
         createdAt = createdAt,
         message = "회원가입에 성공하였습니다."
+    )
+}
+
+fun Member.toResponse(): MemberResponse {
+    val formatter = DateTimeFormatter.ofPattern("yyMMdd")
+    val birthdate = LocalDate.parse(this.residentId.substring(0, 6), formatter)
+
+    return MemberResponse(
+        id = id!!,
+        createdAt = createdAt,
+        email = email,
+        nickname = nickName,
+        birthdate = birthdate,
+        role = role.toString(),
     )
 }

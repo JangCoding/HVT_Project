@@ -1,21 +1,21 @@
 package com.jansparta.hvt_project.domain.member.service
 
-import com.jansparta.hvt_project.domain.member.dto.LoginRequest
-import com.jansparta.hvt_project.domain.member.dto.LoginResponse
-import com.jansparta.hvt_project.domain.member.dto.SignupRequest
-import com.jansparta.hvt_project.domain.member.dto.SignupResponse
+import com.jansparta.hvt_project.domain.member.dto.*
 import com.jansparta.hvt_project.domain.member.model.Member
+import com.jansparta.hvt_project.domain.member.model.toResponse
 import com.jansparta.hvt_project.domain.member.model.toSignupResponse
 import com.jansparta.hvt_project.domain.member.repository.MemberRepository
 import com.jansparta.hvt_project.domain.member.repository.MemberRole
-import com.jansparta.hvt_project.infra.JwtPlugin
+import com.jansparta.hvt_project.infra.Security.jwt.JwtPlugin
 import com.jansparta.hvt_project.infra.exception.EmailAlreadyExistException
 import com.jansparta.hvt_project.infra.exception.InvalidPasswordException
 import com.jansparta.hvt_project.infra.exception.ModelNotFoundException
 import com.jansparta.hvt_project.infra.exception.NicknameAlreadyExistException
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.*
 
 
 @Service
@@ -51,6 +51,17 @@ class MemberServiceImpl(
                 role = member.role.toString()
             )
         )
+    }
+
+    override fun getAllMembers(): List<MemberResponse> {
+        return memberRepository.findAll().map{ member ->
+            member.toResponse()
+        }
+    }
+
+    override fun getMemberByUserId(userId: UUID): MemberResponse {
+        val member = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        return member.toResponse()
     }
 }
 

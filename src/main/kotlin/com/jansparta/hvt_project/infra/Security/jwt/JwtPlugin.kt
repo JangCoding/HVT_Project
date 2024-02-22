@@ -1,4 +1,4 @@
-package com.jansparta.hvt_project.infra
+package com.jansparta.hvt_project.infra.Security.jwt
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws

@@ -1,4 +1,4 @@
-package com.jansparta.hvt_project.infra.Security.jwt
+package com.jansparta.hvt_project.infra.Security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
