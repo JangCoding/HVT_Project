@@ -1,6 +1,7 @@
 package com.jansparta.hvt_project.domain.member.controller
 
 import com.jansparta.hvt_project.domain.member.dto.*
+import com.jansparta.hvt_project.domain.member.repository.MemberRole
 import com.jansparta.hvt_project.domain.member.service.MemberService
 import com.jansparta.hvt_project.infra.Security.jwt.UserPrincipal
 import io.swagger.v3.oas.annotations.Operation
@@ -9,13 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
@@ -67,4 +62,41 @@ class MemberController(
         return ResponseEntity.status(HttpStatus.OK).body(memberService.updateMember(userId,updateMemberRequest))
     }
 
+    @Operation(summary = "회원 등급 변경")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{userId}/role")
+    fun updateMemberRole(
+        @PathVariable userId : UUID,
+        @RequestBody memberRole: MemberRole,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal
+    ): ResponseEntity<MemberResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.updateRole(userId,memberRole))
+    }
+
+    @Operation(summary = "user 삭제")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{userId}/")
+    fun deleteUser(
+        @PathVariable userId: UUID,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+    ): ResponseEntity<Unit> {
+        memberService.deleteMember(userId)
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build()
+    }
+
+    @Operation(summary = "회원탈퇴")
+    @PreAuthorize("#userPrincipal.id == #userId")
+    @DeleteMapping("/{userId}/deleteId")
+    fun deleteMyEmail(
+        @PathVariable userId: UUID,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
+        loginRequest: LoginRequest
+    ): ResponseEntity<Unit> {
+        memberService.deleteAccount(userId, loginRequest)
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build()
+    }
 }

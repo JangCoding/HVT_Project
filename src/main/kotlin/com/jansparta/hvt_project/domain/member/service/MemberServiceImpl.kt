@@ -11,6 +11,7 @@ import com.jansparta.hvt_project.infra.exception.EmailAlreadyExistException
 import com.jansparta.hvt_project.infra.exception.InvalidPasswordException
 import com.jansparta.hvt_project.infra.exception.ModelNotFoundException
 import com.jansparta.hvt_project.infra.exception.NicknameAlreadyExistException
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -21,8 +22,8 @@ import java.util.*
 @Service
 class MemberServiceImpl(
     private val memberRepository: MemberRepository,
-    private val passwordEncoder : PasswordEncoder,
-    private val jwtPlugin: JwtPlugin
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtPlugin: JwtPlugin,
 ) : MemberService {
     override fun signup(request: SignupRequest): SignupResponse {
         checkedEmailOrNicknameExists(request.email, request.nickName, memberRepository)
@@ -54,7 +55,7 @@ class MemberServiceImpl(
     }
 
     override fun getAllMembers(): List<MemberResponse> {
-        return memberRepository.findAll().map{ member ->
+        return memberRepository.findAll().map { member ->
             member.toResponse()
         }
     }
@@ -69,9 +70,31 @@ class MemberServiceImpl(
         memberRepository.save(updateProfile)
         return updateProfile.toResponse()
     }
+
+    override fun updateRole(userId: UUID, request: MemberRole): MemberResponse {
+        val updateRole = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        memberRepository.save(updateRole)
+        return updateRole.toResponse()
+    }
+
+    @Transactional
+    override fun deleteMember(userId: UUID): String {
+        val member = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        memberRepository.delete(member)
+        return "삭제되었습니다."
+    }
+    @Transactional
+    override fun deleteAccount(userId: UUID, request: LoginRequest): String {
+        val member = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+
+        checkedLoginPassword(member.password, request.password, passwordEncoder)
+        memberRepository.delete(member)
+        return "탈퇴완료하였습니다."
+    }
+
 }
 
-private fun checkedEmailOrNicknameExists(email: String, nickname: String,memberRepository: MemberRepository) {
+private fun checkedEmailOrNicknameExists(email: String, nickname: String, memberRepository: MemberRepository) {
     if (memberRepository.existsByEmail(email)) {
         throw EmailAlreadyExistException(email)
     }
@@ -80,8 +103,9 @@ private fun checkedEmailOrNicknameExists(email: String, nickname: String,memberR
         throw NicknameAlreadyExistException(nickname)
     }
 }
+
 private fun checkedLoginPassword(password: String, inputPassword: String, passwordEncoder: PasswordEncoder) {
-    if(!passwordEncoder.matches(inputPassword, password)) {
+    if (!passwordEncoder.matches(inputPassword, password)) {
         throw InvalidPasswordException(inputPassword)
     }
 }
