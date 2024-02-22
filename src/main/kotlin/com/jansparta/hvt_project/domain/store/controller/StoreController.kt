@@ -22,22 +22,29 @@ import java.io.File
 class StoreController (
     private val storeService : StoreService
 ){
-    @Scheduled(cron = "0 0 12 * * ?")
+    // 매일 정오에 데이터를 가져와 저장하는 스케줄링 함수
+    @Scheduled(cron = "0 0 12 * * ?")// cron 표현식으로 매일 정오에 작업 수행 설정
     @GetMapping("/collection-openapi")
     fun fetchDataAndStore(): ResponseEntity<String> {
+        // 데이터를 가져와 저장하는 작업 수행
         storeService.fetchDataAndStore()
+        // 작업이 성공적으로 완료되면 HTTP 상태 코드 200과 메시지를 반환
         return ResponseEntity.ok("데이터를 성공적으로 가져왔습니다.")
     }
-
+    // CSV 파일을 업로드해서 쇼핑몰 정보를 가져오는 함수
     @PostMapping("/collection") // 업체 리스트 csv 불러오기
     fun getStoresFromCSV(@RequestParam("file")multipartFile: MultipartFile)
     {
+        // 임시 파일 생성
         val tempFile = File.createTempFile("temp", null)
         try {
+            // 업로드된 파일을 임시 파일로 복사
             multipartFile.transferTo(tempFile)
+            // 임시 파일로부터 쇼핑몰 정보를 가져오는 작업 수행
             storeService.getStoresFromCSV(tempFile)
         } finally {
-            tempFile.delete() // 파일 처리가 끝난 후에 임시 파일 삭제
+            // 파일 처리가 끝난 후에 임시 파일 삭제
+            tempFile.delete() 
         }
     }
 

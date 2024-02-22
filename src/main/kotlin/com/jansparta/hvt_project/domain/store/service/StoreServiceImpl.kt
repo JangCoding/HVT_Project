@@ -22,9 +22,9 @@ class StoreServiceImpl(
     private val storeRepository: StoreRepository,
 
 ) : StoreService {
-    private val KEY = "6c66575174726c6136306f73446167"
+    private val KEY = "6c66575174726c6136306f73446167" // OpenAPI 인증키
     private val baseUrl = "http://openapi.seoul.go.kr:8088/$KEY/xml/ServiceInternetShopInfo"
-    private val recordPerPage = 1000
+    private val recordPerPage = 1000 // 한 페이지 당 나타내는 데이터 개수
 
     //XML 문서의 특정 Element 에서 특정 태그의 값을 가져오는 역할
     private fun getTagValue(element: Element, tagName: String): String? {
@@ -32,34 +32,45 @@ class StoreServiceImpl(
         // 태그가 해당 Element 내에 존재하는지를 확인
         if (nodeList.length > 0) {
             val node = nodeList.item(0)
-            return node?.textContent
+            return node?.textContent //첫 번째 노드의 내용을 반환
         }
         return null
     }
-
+    // DocumentBuilder를 이용하여 XML 형태의 데이터를 파싱
     override fun fetchDataAndStore() {
+        // DocumentBuilderFactory 인스턴스 생성
         val factory = DocumentBuilderFactory.newInstance()
+        // DocumentBuilder 인스턴스 생성
         val builder = factory.newDocumentBuilder()
-
+        // API의 첫 페이지에서 데이터를 가져와 파싱
         val initialDoc = builder.parse("$baseUrl/1/$recordPerPage")
+        // 전체 아이템 수를 가져옴
         val totalItemCount = initialDoc.getElementsByTagName("list_total_count").item(0).textContent.toInt()
-        val totalPage = (totalItemCount + recordPerPage - 1) / recordPerPage // 올림 연산
-
+        // 전체 페이지 수 계산 (올림 처리)
+        val totalPage = (totalItemCount + recordPerPage - 1) / recordPerPage
+        // Store 객체를 담을 리스트 생성
         val stores = mutableListOf<Store>()
-
+        // 각 페이지에 대해 수행
         for (page in 1..totalPage) {
+            // 시작 인덱스와 끝 인덱스 계산
             val startIndex = (page - 1) * recordPerPage + 1
             val endIndex = page * recordPerPage
+            // 해당 페이지의 데이터를 가져오는 URL 생성
             val url = "$baseUrl/$startIndex/$endIndex"
+            // URL에서 데이터를 가져와 파싱
             val doc = builder.parse(url)
+            // "row" 태그를 가진 모든 Element를 가져옴
             val items = doc.getElementsByTagName("row")
 
-
+            // 각 Element에 대해 수행
             for (i in 0 until items.length) {
+                // Element를 item 변수에 저장
                 val item = items.item(i) as Element
+                // 각 태그의 값을 가져옴
                 val company = getTagValue(item, "COMPANY")
                 val shopName = getTagValue(item, "SHOP_NAME")
                 val domainName = getTagValue(item, "DOMAIN_NAME")
+                // 회사명, 쇼핑몰 이름, 도메인 이름을 기준으로 가장 최근에 추가된 쇼핑몰을 찾음
                 val existingStore = company?.let { comp ->
                     shopName?.let { shop ->
                         domainName?.let { domain ->
@@ -67,6 +78,7 @@ class StoreServiceImpl(
                         }
                     }
                 }
+                // 기존에 존재하는 쇼핑몰이 있으면 정보를 업데이트
                 val store = existingStore?.apply {
                         tel = getTagValue(item, "TEL")
                         email = getTagValue(item, "EMAIL")
@@ -97,7 +109,9 @@ class StoreServiceImpl(
                         leave = getTagValue(item, "LEAVE")
                         kaesolYear = getTagValue(item, "KAESOL_YEAR")
                         regDate = getTagValue(item, "REG_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
-                    } ?: Store(
+                    }
+                    //없으면 새로운 Store 객체를 생성
+                    ?: Store(
                         company = company,
                         shopName = shopName,
                         domainName = domainName,
@@ -131,47 +145,56 @@ class StoreServiceImpl(
                         kaesolYear = getTagValue(item, "KAESOL_YEAR"),
                         regDate = getTagValue(item, "REG_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
                     )
+                // Store 객체를 리스트에 추가
                 stores.add(store)
-
+                // 리스트의 크기가 100이면 데이터베이스에 저장하고 리스트를 비움
                 if (stores.size == 100) {
                     storeRepository.saveAll(stores)
                     stores.clear()
                 }
             }
         }
+        // 모든 페이지를 돌고 난 후, 리스트에 남아있는 Store 객체가 있으면 데이터베이스에 저장
         if (stores.isNotEmpty()) {
             storeRepository.saveAll(stores)
         }
     }
 
-
+    // CSV 파일을 읽어서 Store 객체를 생성하고 데이터베이스에 저장하는 클래스
     companion object {
         const val EXPECTED_FIELD_COUNT = 32 // CSV 파일의 각 줄이 가지는 필드 개수
     }
+    // CSV 파일을 읽는 함수
     override fun readCsvFile() {
+        // CSV 파일 경로
         val file = File("C:\\csv\\file.csv")
-
+        // CSV 파일로부터 Store 객체를 생성하는 함수 호출
         this.getStoresFromCSV(file)
     }
-
+    // CSV 파일로부터 Store 객체를 생성하는 함수
     override fun getStoresFromCSV(file: File) {
+        // 파일이 존재하지 않으면 FileNotFoundException 발생
         if (!file.exists()) {
             throw FileNotFoundException("파일을 찾을 수 없습니다.")
         }
-
+        // 파일의 모든 줄을 읽음
         val lines = file.readLines()
+        // Store 객체를 저장할 리스트 생성
         val stores = mutableListOf<Store>()
+        // 각 줄에 대해 수행
         lines.forEachIndexed {index, line ->
             try {
                 // 따옴표로 묶인 필드를 올바르게 처리하는 정규식
-                val regex = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex()  // 따옴표로 묶인 필드를 올바르게 처리하는 정규식
+                val regex = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex()
+                // 정규식을 이용해 줄을 필드별로 나눔
                 val data = regex.split(line).map { it.trim('\"') }
                 // 파일 포맷 검증: 필드 개수 확인
                 if (data.size != EXPECTED_FIELD_COUNT) {
                     throw IllegalArgumentException("잘못된 데이터 포맷입니다: $line")
                 }
-
+                // 각 필드의 값을 이용해 Store 객체 생성
                 val store = Store(
+                    // 여기서의 코드는 각 필드의 값을 가져와서 Store 객체의 속성 값 설정
                     company = data[0].ifEmpty { null },
                     shopName = data[1].ifEmpty { null },
                     domainName = data[2].ifEmpty { null },
@@ -205,8 +228,9 @@ class StoreServiceImpl(
                     kaesolYear = data[30].ifEmpty { null },
                     regDate = LocalDate.parse(data[31], DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()
                 )
+                // Store 객체를 리스트에 추가
                 stores.add(store)
-
+                // 리스트의 크기가 100이면 데이터베이스에 저장하고 리스트를 비움
                 if ((index + 1) % 100 == 0) {
                     storeRepository.saveAll(stores)
                     stores.clear()
@@ -216,6 +240,7 @@ class StoreServiceImpl(
                 e.printStackTrace()
             }
         }
+        // 모든 줄을 돌고 난 후, 리스트에 남아있는 Store 객체가 있으면 데이터베이스에 저장
         if (stores.isNotEmpty()) {
             storeRepository.saveAll(stores)
         }
