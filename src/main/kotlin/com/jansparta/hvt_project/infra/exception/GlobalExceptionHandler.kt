@@ -1,17 +1,62 @@
 package com.jansparta.hvt_project.infra.exception
 
-import io.jsonwebtoken.JwtException
+import com.jansparta.hvt_project.infra.exception.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestControllerAdvice
 
+@RestControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(JwtException::class)
-    fun handleJwtException(e: JwtException): ResponseEntity<String> {
-        // 예외에 따른 HTTP 상태 코드와 에러 메시지를 설정
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token: ${e.message}")
+    @ExceptionHandler(ModelNotFoundException::class)
+    fun handleModelNotFoundException(e: ModelNotFoundException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(e.message))
     }
 
-    // 여기에 다른 예외 처리 메소드를 추가할 수 있습니다.
+    @ExceptionHandler(LikeException::class)
+    fun handleLikeException(e: LikeException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(EmailAlreadyExistException::class)
+    fun handleEmailAlreadyExistException(e: EmailAlreadyExistException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(NicknameAlreadyExistException::class)
+    fun handleNicknameAlreadyExistException(e: NicknameAlreadyExistException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(NotHavePermissionException::class)
+    fun handleNotHavePermissionException(e: NotHavePermissionException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(InvalidPasswordException::class)
+    fun handleInvalidPasswordException(e: InvalidPasswordException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(InvalidRoleException::class)
+    fun handleInvalidRoleException(e: InvalidRoleException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+
 }

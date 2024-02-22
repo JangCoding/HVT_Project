@@ -25,19 +25,20 @@ class MemberServiceImpl(
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin,
 ) : MemberService {
+    @Transactional
     override fun signup(request: SignupRequest): SignupResponse {
-        checkedEmailOrNicknameExists(request.email, request.nickName, memberRepository)
+        checkedEmailOrNicknameExists(request.email!!, request.nickName, memberRepository)
 
-        return memberRepository.save(
+        val savedMember = memberRepository.save(
             Member(
                 email = request.email,
                 password = passwordEncoder.encode(request.password),
                 nickName = request.nickName,
-                residentId = request.residentId,
-                createdAt = LocalDateTime.now(),
+                residentId = request.residentId!!,
                 role = MemberRole.MEMBER
             )
-        ).toSignupResponse()
+        )
+        return savedMember.toSignupResponse()
     }
 
     override fun login(request: LoginRequest): LoginResponse {
@@ -66,15 +67,18 @@ class MemberServiceImpl(
     }
 
     override fun updateMember(userId: UUID, request: UpdateMemberRequest): MemberResponse {
-        val updateProfile = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
-        memberRepository.save(updateProfile)
-        return updateProfile.toResponse()
+        val member = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        member.nickName = request.nickname
+        memberRepository.save(member)
+        return member.toResponse()
     }
 
-    override fun updateRole(userId: UUID, request: MemberRole): MemberResponse {
-        val updateRole = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
-        memberRepository.save(updateRole)
-        return updateRole.toResponse()
+    override fun updateRole(userId: UUID, request: RoleDto): MemberResponse {
+        val member = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        member.role = request.role
+        memberRepository.save(member)
+
+        return member.toResponse()
     }
 
     @Transactional

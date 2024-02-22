@@ -25,8 +25,6 @@ class Member(
     @Column(name = "RESIDENT_ID")
     val residentId: String,
 
-    @Column(name = "CREATED_AT")
-    val createdAt: LocalDateTime,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
@@ -44,21 +42,17 @@ fun Member.toSignupResponse(): SignupResponse {
     return SignupResponse(
         id = id!!,
         email = email,
-        createdAt = createdAt,
         message = "회원가입에 성공하였습니다."
     )
 }
 
 fun Member.toResponse(): MemberResponse {
-    val formatter = DateTimeFormatter.ofPattern("yyMMdd")
-    val birthdate = LocalDate.parse(this.residentId.substring(0, 6), formatter)
 
     return MemberResponse(
         id = id!!,
-        createdAt = createdAt,
         email = email,
         nickname = nickName,
-        birthdate = birthdate,
+        residentId = residentId,
         role = role.toString(),
     )
 }

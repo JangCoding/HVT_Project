@@ -5,6 +5,7 @@ import com.jansparta.hvt_project.domain.member.repository.MemberRole
 import com.jansparta.hvt_project.domain.member.service.MemberService
 import com.jansparta.hvt_project.infra.Security.jwt.UserPrincipal
 import io.swagger.v3.oas.annotations.Operation
+import jakarta.validation.Valid
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,7 @@ import java.util.UUID
 class MemberController(
     private val memberService: MemberService
 ) {
+
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     fun signup(signupRequest: SignupRequest) : ResponseEntity<SignupResponse> {
@@ -37,7 +39,7 @@ class MemberController(
     @Operation(summary = "회원정보 전체 조회")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    fun getAllMembers() : ResponseEntity<List<MemberResponse>>{
+    fun getAllMembers(@AuthenticationPrincipal userPrincipal: UserPrincipal) : ResponseEntity<List<MemberResponse>>{
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getAllMembers())
     }
 
@@ -64,13 +66,13 @@ class MemberController(
 
     @Operation(summary = "회원 등급 변경")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{userId}/role")
+    @PatchMapping("/{userId}/role")
     fun updateMemberRole(
         @PathVariable userId : UUID,
-        @RequestBody memberRole: MemberRole,
+        @RequestBody roleDto: RoleDto,
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<MemberResponse>{
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.updateRole(userId,memberRole))
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.updateRole(userId,roleDto))
     }
 
     @Operation(summary = "user 삭제")

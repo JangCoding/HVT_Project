@@ -15,7 +15,7 @@ interface MemberService {
 
     fun updateMember(userId: UUID, request: UpdateMemberRequest) : MemberResponse
 
-    fun updateRole(userId: UUID, request: MemberRole) : MemberResponse
+    fun updateRole(userId: UUID, request:RoleDto) : MemberResponse
 
     fun deleteMember(userId: UUID) : String
 

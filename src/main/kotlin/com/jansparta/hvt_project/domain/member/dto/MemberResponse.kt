@@ -9,6 +9,5 @@ data class MemberResponse (
     val email: String,
     val nickname: String,
     val role : String,
-    val birthdate : LocalDate,
-    val createdAt: LocalDateTime,
+    var residentId: String,
 )

@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import java.util.*
 
 @Component
 class JwtAuthenticationFilter(
@@ -28,12 +29,12 @@ class JwtAuthenticationFilter(
         if (jwt != null) {
             jwtPlugin.validateToken(jwt)
                 .onSuccess {
-                    val userId = it.payload.subject.toLong()
+                    val userId = it.payload.subject
                     val email = it.payload.get("email", String::class.java)
                     val role = it.payload.get("role", String::class.java)
 
                     val principal = UserPrincipal(
-                        id = userId,
+                        id = UUID.fromString(userId),
                         email = email,
                         roles = setOf(role)
                     )
@@ -46,7 +47,7 @@ class JwtAuthenticationFilter(
                 }
         }
 
-        filterChain.doFilter(request, response)
+        filterChain.doFilter(request, response) //이부분
     }
 
     private fun HttpServletRequest.getBearerToken(): String? {
