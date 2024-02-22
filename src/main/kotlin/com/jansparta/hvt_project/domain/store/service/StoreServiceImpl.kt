@@ -141,11 +141,14 @@ class StoreServiceImpl(
                 regDate = request.regDate
             )).toResponse()
     }
+
     override fun getFilteredStoreList(rating: Int?, status: String?): List<StoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findByRatingAndStatus(rating, status).map { it.toResponse() }
     }
 
     override fun getFilteredSimpleStoreList(rating: Int?, status: String?): List<SimpleStoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findSimpleByRatingAndStatus(rating, status).map { it.toResponse() }
     }
 
@@ -155,6 +158,7 @@ class StoreServiceImpl(
         rating: Int?,
         status: String?
     ): Page<StoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
@@ -164,9 +168,18 @@ class StoreServiceImpl(
         rating: Int?,
         status: String?
     ): Page<SimpleStoreResponse> {
+        checkFilterArgument(rating, status)
         return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
+    fun checkFilterArgument(rating: Int?, status: String?) {
+        rating?.let {
+            if(it !in 0..3 ) throw IllegalArgumentException("전체평가는 0~3 사이의 값을 입력해야 합니다")
+        }
+        status?.let {
+            if(StatNmStatus.fromString(it) !in StatNmStatus.values()) throw IllegalArgumentException("업소상태에 대해 유효하지 않은 입력값입니다")
+        }
+    }
 
     @Cacheable("PagedStoreCache", key = "{#pageable.pageNumber, #pageable.pageSize, #toSimple }", cacheManager = "defaultCacheManager")
     override fun <T> getStoreList( pageable: Pageable, toSimple:Boolean) : Page<T> {
