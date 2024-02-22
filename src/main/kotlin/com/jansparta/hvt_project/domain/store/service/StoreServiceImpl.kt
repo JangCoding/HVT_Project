@@ -218,6 +218,12 @@ class StoreServiceImpl(
         return storeRepository.findSimpleByPageableAndFilter(pageable, cursorId, rating, status).map { it.toResponse() }
     }
 
+    fun checkFilterArgument(rating: Int?, status: String?) {
+        rating?.let {
+            if(it !in 0..3 ) throw IllegalArgumentException("전체평가는 0~3 사이의 값을 입력해야 합니다")
+        }
+    }
+
     override fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?): StoreResponse {
         if(id == null && company == null && shopName == null && tel == null)
             throw NotFoundException()
