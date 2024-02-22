@@ -10,8 +10,6 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.slf4j.LoggerFactory
-import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -92,7 +90,7 @@ class StoreServiceImpl(
                         ypForm = getTagValue(item, "YPFORM")
                         firstHeoDate = getTagValue(item, "FIRST_HEO_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() }
                         comAddr = getTagValue(item, "COM_ADDR")
-                        statNm = getTagValue(item, "STAT_NM")
+                        statNm = StatNmStatus.fromString( getTagValue(item, "STAT_NM")!! )
                         totRatingPoint = getTagValue(item, "TOT_RATINGPOINT")?.toIntOrNull()
                         chogiRatingPoint = getTagValue(item, "CHOGI_RATINGPOINT")?.toIntOrNull()
                         chungRatingPoint = getTagValue(item, "CHUNG_RATINGPOINT")?.toIntOrNull()
@@ -127,7 +125,7 @@ class StoreServiceImpl(
                         ypForm = getTagValue(item, "YPFORM"),
                         firstHeoDate = getTagValue(item, "FIRST_HEO_DATE")?.let { LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString() },
                         comAddr = getTagValue(item, "COM_ADDR"),
-                        statNm = getTagValue(item, "STAT_NM"),
+                        statNm = StatNmStatus.fromString( getTagValue(item, "STAT_NM")!! ),
                         totRatingPoint = getTagValue(item, "TOT_RATINGPOINT")?.toIntOrNull(),
                         chogiRatingPoint = getTagValue(item, "CHOGI_RATINGPOINT")?.toIntOrNull(),
                         chungRatingPoint = getTagValue(item, "CHUNG_RATINGPOINT")?.toIntOrNull(),
