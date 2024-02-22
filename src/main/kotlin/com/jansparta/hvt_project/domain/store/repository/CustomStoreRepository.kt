@@ -8,11 +8,14 @@ import org.springframework.data.domain.Pageable
 
 interface CustomStoreRepository {
     //QueryDSL 작성
+
+
+    fun getNewStores(size : Long) : List<Store>
     fun <T> getStores(pageable: Pageable, type: Class<T>): Page<T>?
 
     fun getStoreBy(id: Long?, company: String?, shopName: String?, tel: String?) : Store
-  
-  
+
+
     fun findByRatingAndStatus(rating:Int?, status: String?) : List<Store>
 
     fun findSimpleByRatingAndStatus(rating:Int?, status: String?) : List<SimpleStore>
