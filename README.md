@@ -9,4 +9,6 @@
 - 데이터 조회시엔 QueryDsl 을 활용한 동적쿼리를 통해 조건에 맞는 데이터를 유연하고 효율적으로 조회할 수 있도록 하였습니다.
 - 조회된 데이터는 Redis 의 Cache 에 저장되어 이후 같은 요청 발생 시 빠르게 응답할 수 있도록 하였습니다.
 
+
+## ERD
 ![image](https://github.com/JangCoding/HVT_Project/assets/62090021/3868ecbd-d4ee-4855-a1eb-5c38335408b3)
