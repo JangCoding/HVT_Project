@@ -1,9 +1,6 @@
 package com.jansparta.hvt_project.domain.member.controller
 
-import com.jansparta.hvt_project.domain.member.dto.LoginRequest
-import com.jansparta.hvt_project.domain.member.dto.MemberResponse
-import com.jansparta.hvt_project.domain.member.dto.SignupRequest
-import com.jansparta.hvt_project.domain.member.dto.SignupResponse
+import com.jansparta.hvt_project.domain.member.dto.*
 import com.jansparta.hvt_project.domain.member.service.MemberService
 import com.jansparta.hvt_project.infra.Security.jwt.UserPrincipal
 import io.swagger.v3.oas.annotations.Operation
@@ -15,6 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
@@ -55,6 +54,17 @@ class MemberController(
         @AuthenticationPrincipal userPrincipal: UserPrincipal
     ): ResponseEntity<MemberResponse>{
         return ResponseEntity.status(HttpStatus.OK).body(memberService.getMemberByUserId(userId))
+    }
+
+    @Operation(summary = "회원정보 변경")
+    @PreAuthorize("hasRole('ADMIN') or #userPrincipal.id == #userId")
+    @PutMapping("/{userId}")
+    fun updateMemberProfile(
+        @PathVariable userId : UUID,
+        @RequestBody updateMemberRequest: UpdateMemberRequest,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal
+    ): ResponseEntity<MemberResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.updateMember(userId,updateMemberRequest))
     }
 
 }

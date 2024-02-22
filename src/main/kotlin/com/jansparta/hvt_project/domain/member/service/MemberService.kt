@@ -11,4 +11,6 @@ interface MemberService {
     fun getAllMembers(): List<MemberResponse>
 
     fun getMemberByUserId(userId : UUID) : MemberResponse
+
+    fun updateMember(userId: UUID, request: UpdateMemberRequest) : MemberResponse
 }

@@ -63,6 +63,12 @@ class MemberServiceImpl(
         val member = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         return member.toResponse()
     }
+
+    override fun updateMember(userId: UUID, request: UpdateMemberRequest): MemberResponse {
+        val updateProfile = memberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+        memberRepository.save(updateProfile)
+        return updateProfile.toResponse()
+    }
 }
 
 private fun checkedEmailOrNicknameExists(email: String, nickname: String,memberRepository: MemberRepository) {
