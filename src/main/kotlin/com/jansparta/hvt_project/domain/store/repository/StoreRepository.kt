@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface StoreRepository : JpaRepository<Store, Long>, CustomStoreRepository {
     //쿼리메서드 작성
-
+    fun findTopByCompanyAndShopNameAndDomainName(company: String, shopName: String, domainName: String): Store?
     fun existsByCompany(company : String) : Boolean
 }

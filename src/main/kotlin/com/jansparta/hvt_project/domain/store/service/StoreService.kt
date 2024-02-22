@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable
 import java.io.File
 
 interface StoreService {
+    fun fetchDataAndStore()
     fun readCsvFile()
     fun getStoresFromCSV(file: File)
     fun createStore( request : CreateStoreRequest ) : StoreResponse
