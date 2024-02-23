@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
@@ -23,6 +24,7 @@ class StoreController (
 ){
     // 매일 정오에 데이터를 가져와 저장하는 스케줄링 함수
     @Scheduled(cron = "0 0 12 * * ?")// cron 표현식으로 매일 정오에 작업 수행 설정
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/collection-openapi")
     fun fetchDataAndStore(): ResponseEntity<String> {
         // 데이터를 가져와 저장하는 작업 수행
@@ -30,8 +32,11 @@ class StoreController (
         // 작업이 성공적으로 완료되면 HTTP 상태 코드 200과 메시지를 반환
         return ResponseEntity.ok("데이터를 성공적으로 가져왔습니다.")
     }
+
+
     // CSV 파일을 업로드해서 쇼핑몰 정보를 가져오는 함수
     @PostMapping("/collection") // 업체 리스트 csv 불러오기
+    @PreAuthorize("hasRole('ADMIN')")
     fun getStoresFromCSV(@RequestParam("file")multipartFile: MultipartFile)
     {
         // 임시 파일 생성
@@ -48,6 +53,7 @@ class StoreController (
     }
 
     @PostMapping("/create") // 업체 등록 . 상호명으로 중복 판단
+    @PreAuthorize("hasRole('ADMIN')")
     fun createStore(
         @RequestBody request : CreateStoreRequest
     ) : ResponseEntity<StoreResponse>
@@ -56,6 +62,7 @@ class StoreController (
     }
 
     @GetMapping("/filtered") // 필터 적용 리스트 조회
+
     fun getFilteredStoreList(
         @RequestParam(value = "rating", required = false) rating:Int?,
         @RequestParam(value = "status", required = false) status:String?
@@ -129,6 +136,7 @@ class StoreController (
     }
 
     @CacheTimer
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/news")
     fun getNewStores(
         @RequestParam(value = "Size", required = false) size : Long,
@@ -137,6 +145,7 @@ class StoreController (
         return ResponseEntity.status(HttpStatus.OK).body(storeService.getNewStores(size))
     }
     @PutMapping("/update/{id}") // 업체 수정
+    @PreAuthorize("hasRole('ADMIN')")
     fun updateStore(
         @RequestBody request : UpdateStoreRequest,
         @PathVariable id : Long,
@@ -146,6 +155,7 @@ class StoreController (
     }
 
     @DeleteMapping("/delete/{id}") // 업체 삭제
+    @PreAuthorize("hasRole('ADMIN')")
     fun deleteStore(
         @PathVariable id:Long
     ) : ResponseEntity<Unit>
