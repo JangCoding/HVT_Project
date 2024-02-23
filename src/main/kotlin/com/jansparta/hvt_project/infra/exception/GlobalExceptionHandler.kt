@@ -10,6 +10,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<com.jansparta.hvt_project.domain.exception.dto.ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            com.jansparta.hvt_project.domain.exception.dto.ErrorResponse(
+                e.message
+            )
+        )
+    }
+
+    @ExceptionHandler(InvalidArgumentException::class)
+    fun handleInvalidArgumentException(e: InvalidArgumentException): ResponseEntity<com.jansparta.hvt_project.domain.exception.dto.ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            com.jansparta.hvt_project.domain.exception.dto.ErrorResponse(
+                e.message
+            )
+        )
+    }
+
     @ExceptionHandler(ModelNotFoundException::class)
     fun handleModelNotFoundException(e: ModelNotFoundException): ResponseEntity<ErrorResponse> {
         return ResponseEntity
