@@ -1,6 +1,6 @@
 package com.jansparta.hvt_project.domain.store.repository
 
-import com.jansparta.hvt_project.domain.exception.InvalidArgumentException
+import com.jansparta.hvt_project.infra.exception.InvalidArgumentException
 import com.jansparta.hvt_project.domain.store.model.StatNmStatus
 import com.jansparta.hvt_project.domain.store.model.Store
 import io.kotest.assertions.throwables.shouldThrow

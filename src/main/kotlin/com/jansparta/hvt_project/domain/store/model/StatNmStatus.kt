@@ -1,6 +1,6 @@
 package com.jansparta.hvt_project.domain.store.model
 
-import com.jansparta.hvt_project.domain.exception.InvalidArgumentException
+import com.jansparta.hvt_project.infra.exception.InvalidArgumentException
 
 enum class StatNmStatus  {
     사이트운영중단 ,
