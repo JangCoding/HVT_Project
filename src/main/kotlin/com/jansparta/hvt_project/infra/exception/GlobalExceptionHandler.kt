@@ -1,6 +1,5 @@
 package com.jansparta.hvt_project.infra.exception
 
-import com.jansparta.hvt_project.domain.exception.InvalidArgumentException
 import com.jansparta.hvt_project.infra.exception.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,23 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<com.jansparta.hvt_project.domain.exception.dto.ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            com.jansparta.hvt_project.domain.exception.dto.ErrorResponse(
-                e.message
-            )
-        )
-    }
 
-    @ExceptionHandler(InvalidArgumentException::class)
-    fun handleInvalidArgumentException(e: InvalidArgumentException): ResponseEntity<com.jansparta.hvt_project.domain.exception.dto.ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            com.jansparta.hvt_project.domain.exception.dto.ErrorResponse(
-                e.message
-            )
-        )
-    }
 
     @ExceptionHandler(ModelNotFoundException::class)
     fun handleModelNotFoundException(e: ModelNotFoundException): ResponseEntity<ErrorResponse> {
