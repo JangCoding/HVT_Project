@@ -1,5 +1,6 @@
 package com.jansparta.hvt_project.infra.exception
 
+import com.jansparta.hvt_project.domain.exception.InvalidArgumentException
 import com.jansparta.hvt_project.infra.exception.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -59,4 +60,13 @@ class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(InvalidArgumentException::class)
+    fun handleInvalidArgumentException(e: InvalidArgumentException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse(e.message))
+    }
 }

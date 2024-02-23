@@ -32,6 +32,8 @@ class SecurityConfig(
                     "/members",
                     "/members/login",
                     "/members/{userId}",
+                    "/stores",
+                    "/stores/{id}",
                     "/swagger-ui/**",
                     "/v3/api-docs/**"
                 ).permitAll()
